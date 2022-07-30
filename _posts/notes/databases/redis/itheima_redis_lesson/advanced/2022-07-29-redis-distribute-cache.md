@@ -195,8 +195,8 @@ Sentinel 如何判断一个 redis 实例是否健康？
 ```conf
 # sentinel.conf
 port 27001
-sentinel announce-ip 192.168.150.101
-sentinel monitor mymaster 192.168.150.101 7001 2
+sentinel announce-ip 192.168.31.57
+sentinel monitor mymaster 192.168.31.57 7001 2
 sentinel down-after-milliseconds mymaster 5000
 sentinel failover-timeout mymaster 60000
 dir "/tmp/s1"
