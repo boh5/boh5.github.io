@@ -3,6 +3,7 @@ title: Redis 分布式缓存
 last_modified_at: 2020-07-30T21:16+08:00
 toc: true
 toc_sticky: true
+excerpt_separator: <!--more-->
 categories:
   - 学习笔记
   - redis
@@ -19,7 +20,7 @@ tags:
 2. 并发能力问题：主从集群，读写分离
 3. 储存能力问题：分配集群，插槽机制动态扩容
 4. 故障恢复问题：redis 哨兵，健康检测和自动恢复
-
+<!--more-->
 ## 1. Redis 持久化
 
 ### 1.1 RDB （Redis Database Backup file）
