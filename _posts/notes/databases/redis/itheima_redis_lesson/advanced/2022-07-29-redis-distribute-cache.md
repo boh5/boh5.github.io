@@ -42,7 +42,7 @@ fork采用的是copy-on-write技术：
 - 当主进程执行写操作时，则会拷贝一份数据，执行写操作
 - 极端情况内存占用翻倍
 
-![rdb 原理](/assets/images/posts/notes/itheima_redis_lesson/advanced/image-20210725151319695.png)
+![rdb 原理](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/image-20210725151319695.png)
 
 #### 1.1.3 总结
 
@@ -75,7 +75,7 @@ AOF会记录对同一个key的多次写操作，但只有最后一次写操作�
 
 ### 1.3 RDB vs AOF
 
-![RDB vs AOF](/assets/images/posts/notes/itheima_redis_lesson/advanced/image-20210725151940515.png)
+![RDB vs AOF](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/image-20210725151940515.png)
 
 ## 2. Redis 主从
 
@@ -87,7 +87,7 @@ AOF会记录对同一个key的多次写操作，但只有最后一次写操作�
 
 主从第一次建立连接时，会执行**全量同步**
 
-![全量同步](/assets/images/posts/notes/itheima_redis_lesson/advanced/image-20210725152222497.png)
+![全量同步](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/image-20210725152222497.png)
 
 master如何得知salve是第一次来连接呢？？
 
@@ -106,7 +106,7 @@ master如何得知salve是第一次来连接呢？？
 
 如果 slave 重启，执行增量同步
 
-![增量同步](/assets/images/posts/notes/itheima_redis_lesson/advanced/image-20210725153201086.png)
+![增量同步](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/image-20210725153201086.png)
 
 #### 2.2.4 repl_backlog 原理
 
@@ -144,7 +144,7 @@ master如何得知salve是第一次来连接呢？？
 #### 3.1.1 集群结构和作用
 结构：
 
-![哨兵结构](/assets/images/posts/notes/itheima_redis_lesson/advanced/image-20210725154528072.png)
+![哨兵结构](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/image-20210725154528072.png)
 
 作用：
 - 监控
@@ -299,7 +299,7 @@ redis-cli --cluster reshard
 
 利用 `cluster failover` 命令可以手动让集群中的某个 master 宕机，切换到执行 `cluster failover` 命令的这个 slave 节点，实现无感知的数据迁移。
 
-![手动故障转移](/assets/images/posts/notes/itheima_redis_lesson/advanced/image-20210725162441407.png)
+![手动故障转移](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/image-20210725162441407.png)
 
 这种 failover 命令可以指定三种模式：
 

@@ -26,7 +26,7 @@ Redis 没有直接使用 C 语言中的字符串，因为 C 语言字符串存�
 
 Redis构建了一种新的字符串结构，称为简单动态字符串（Simple Dynamic String），简称SDS。
 
-![SDS](/assets/images/posts/notes/itheima_redis_lesson/advanced/1653984624671.png)
+![SDS](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/1653984624671.png)
 
 SDS 具备动态扩容能力，如果我们要给SDS追加一段字符串，首先会申请新内存空间，称为**内存预分配**，再把值写入：
 - 如果新字符串小于 1M，则新空间为扩展后字符串长度的两倍 + 1
@@ -44,11 +44,11 @@ SDS 优点：
 IntSet 是 Redis 中 set 集合的一种实现方式，基于整数数组来实现，并且具备长度可变、有序等特征。
 结构如下：
 
-![IntSet](/assets/images/posts/notes/itheima_redis_lesson/advanced/1653984923322.png)
+![IntSet](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/1653984923322.png)
 
 其中的 encoding 包含三种模式，表示存储的整数大小不同：
 
-![IntSet encoding](/assets/images/posts/notes/itheima_redis_lesson/advanced/1653984942385.png)
+![IntSet encoding](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/1653984942385.png)
 
 **`contents[]` 存指向实际数组其实位置的指针，数据编码由 encoding 决定**
 
@@ -69,7 +69,7 @@ IntSet 是 Redis 中 set 集合的一种实现方式，基于整数数组来实�
 
 Redis 键与值的映射关系正是通过 Dict 来实现的。 Dict由三部分组成，分别是：哈希表（DictHashTable）、哈希节点（DictEntry）、字典（Dict）
 
-![Redis Dict 组成](/assets/images/posts/notes/itheima_redis_lesson/advanced/1653985570612.png)
+![Redis Dict 组成](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/1653985570612.png)
 
 当我们向 Dict 添加键值对时，Redis首先根据key计算出hash值（h），然后利用 `h & sizemask`（相当于 `h % size`）来计算元素应该存储到数组中的哪个索引位置。
 
@@ -117,7 +117,7 @@ Dict的伸缩：
 
 ZipList 是一种特殊的“双端链表” ，由一系列特殊编码的连续内存块组成。可以在任意一端进行压入/弹出操作, 并且该操作的时间复杂度为 O(1)。
 
-![ZipList 结构](/assets/images/posts/notes/itheima_redis_lesson/advanced/20220805192914.png)
+![ZipList 结构](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/20220805192914.png)
 
 
 
@@ -131,7 +131,7 @@ ZipList 是一种特殊的“双端链表” ，由一系列特殊编码的连�
 
 **ZipListEntry**
 
-![ZipListEntry](/assets/images/posts/notes/itheima_redis_lesson/advanced/1653986055253.png)
+![ZipListEntry](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/1653986055253.png)
 
 - previous_entry_length：前一节点的长度，占1个或5个字节。
   - 如果前一节点的长度小于254字节，则采用1个字节来保存这个长度值
@@ -199,7 +199,7 @@ SkipList（跳表）本质是链表，但与传统链表相比有几点差异：
 - 元素按照升序排列存储
 - 节点可能包含多个指针，指针跨度不同。
 
-![SkipList](/assets/images/posts/notes/itheima_redis_lesson/advanced/1653986813240.png)
+![SkipList](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/1653986813240.png)
 
 **总结**
 
@@ -216,7 +216,7 @@ SkipList的特点：
 
 Redis中的任意数据类型的键和值都会被封装为一个RedisObject。
 
-![RedisObject](/assets/images/posts/notes/itheima_redis_lesson/advanced/1653986956618.png)
+![RedisObject](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/1653986956618.png)
 
 > String 类型每个对象都有一个头，占用内存，尽量用集合类型代替
 
@@ -272,7 +272,7 @@ Redis中的任意数据类型的键和值都会被封装为一个RedisObject。
 
 通过 Dict 和 SkipList 实现：
 
-![ZSet](/assets/images/posts/notes/itheima_redis_lesson/advanced/1653992172526.png)
+![ZSet](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/1653992172526.png)
 
 当元素数量不多时，HT和SkipList的优势不明显，而且更耗内存。因此zset还会采用ZipList结构来节省内存，不过需要同时满足两个条件：
 

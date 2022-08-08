@@ -85,7 +85,7 @@ redis 处理指令是很快的，主要花费的时候在于网络传输。于�
 
 ### 2.2 集群下的批处理
 
-![集群下的批处理解决方案](/assets/images/posts/notes/itheima_redis_lesson/advanced/1653126446641.png)
+![集群下的批处理解决方案](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/1653126446641.png)
 
 redis-py:
 - `cluster.mset({'k1': 'v1', 'k2': 'v2', 'k3': 'v3'})` 不能用，必须同一个 slot 才行。因此要先用 `cluster.keyslot(<key>)`分组。

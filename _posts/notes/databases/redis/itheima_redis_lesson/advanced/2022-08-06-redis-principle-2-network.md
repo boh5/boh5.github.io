@@ -32,7 +32,7 @@ Linux系统为了提高IO效率，会在用户空间和内核空间都加入缓�
 - 写数据时，要把用户缓冲数据拷贝到内核缓冲区，然后写入设备
 - 读数据时，要从设备读取数据到内核缓冲区，然后拷贝到用户缓冲区
 
-![用户空间和内核空间](/assets/images/posts/notes/itheima_redis_lesson/advanced/1653896687354.png)
+![用户空间和内核空间](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/1653896687354.png)
 
 ### 1.2 五种 IO 模型
 
@@ -54,7 +54,7 @@ Linux系统为了提高IO效率，会在用户空间和内核空间都加入缓�
 
 用户去读取数据时，会去先发起 recvform 一个命令，去尝试从内核上加载数据，如果内核没有数据，那么用户就会等待，此时内核会去从硬件上读取数据，内核读取数据之后，会把数据拷贝到用户态，并且返回ok，整个过程，都是阻塞等待的，这就是阻塞IO。
 
-![阻塞 IO](/assets/images/posts/notes/itheima_redis_lesson/advanced/1653897270074.png)
+![阻塞 IO](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/1653897270074.png)
 
 > 阻塞IO模型中，用户进程在两个阶段都是阻塞状态。
 
@@ -62,7 +62,7 @@ Linux系统为了提高IO效率，会在用户空间和内核空间都加入缓�
 
 非阻塞IO的recvfrom操作会立即返回结果而不是阻塞用户进程。
 
-![非阻塞 IO](/assets/images/posts/notes/itheima_redis_lesson/advanced/1653897490116.png)
+![非阻塞 IO](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/1653897490116.png)
 
 > 非阻塞IO模型中，用户进程在第一个阶段是非阻塞，第二个阶段是阻塞状态。虽然是非阻塞，但性能并没有得到提高。而且忙等机制会导致CPU空转，CPU使用率暴增。
 
@@ -74,7 +74,7 @@ Linux系统为了提高IO效率，会在用户空间和内核空间都加入缓�
 
 IO 多路复用：利用一个线程监听多个FD，并在某个FD可读、可写时得到通知，从而避免无效的等待，充分利用CPU资源。
 
-![IO 多路复用](/assets/images/posts/notes/itheima_redis_lesson/advanced/1653898691736.png)
+![IO 多路复用](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/1653898691736.png)
 
 监听FD的方式、通知的方式又有多种实现，常见的有：
 
@@ -90,7 +90,7 @@ IO 多路复用：利用一个线程监听多个FD，并在某个FD可读、可�
 
 select是Linux最早的I/O多路复用实现方案。
 
-![select 模式](/assets/images/posts/notes/itheima_redis_lesson/advanced/20220806210444.png)
+![select 模式](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/20220806210444.png)
 
 select 模式存在的问题：
 - 需要将整个fd_set从用户空间拷贝到内核空间，select结束还要再次拷贝回用户空间
@@ -101,7 +101,7 @@ select 模式存在的问题：
 
 poll 模式对 select 模式做了简单改进，但性能提升不明显。
 
-![poll 模式](/assets/images/posts/notes/itheima_redis_lesson/advanced/1653900721427.png)
+![poll 模式](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/1653900721427.png)
 
 与select对比：
 
@@ -112,7 +112,7 @@ poll 模式对 select 模式做了简单改进，但性能提升不明显。
 
 epoll 模式是对 select 和 poll 的巨大改进。
 
-![epoll 模式](/assets/images/posts/notes/itheima_redis_lesson/advanced/20220806212510.png)
+![epoll 模式](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/20220806212510.png)
 
 ##### 1.2.3.4 三种模式总结
 
@@ -146,13 +146,13 @@ epoll模式中如何解决这些问题的？
 
 ##### 1.2.3.6 基于 epoll 的 web 服务的基本流程
 
-![基于 epoll 的 web 服务的基本流程](/assets/images/posts/notes/itheima_redis_lesson/advanced/1653902845082.png)
+![基于 epoll 的 web 服务的基本流程](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/1653902845082.png)
 
 #### 1.2.4 信号驱动 IO
 
 信号驱动IO是与内核建立SIGIO的信号关联并设置回调，当内核有FD就绪时，会发出SIGIO信号通知用户，期间用户应用可以执行其它业务，无需阻塞等待。
 
-![信号驱动 IO](/assets/images/posts/notes/itheima_redis_lesson/advanced/1653911776583.png)
+![信号驱动 IO](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/1653911776583.png)
 
 当有大量IO操作时，信号较多，SIGIO处理函数不能及时处理可能导致信号队列溢出，而且内核空间与用户空间的频繁信号交互性能也较低。
 
@@ -160,13 +160,13 @@ epoll模式中如何解决这些问题的？
 
 这种方式，不仅仅是用户态在试图读取数据后，不阻塞，而且当内核的数据准备完成后，也不会阻塞。
 
-![异步 IO](/assets/images/posts/notes/itheima_redis_lesson/advanced/1653911877542.png)
+![异步 IO](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/1653911877542.png)
 
 #### 1.2.6 五种 IO 模型对比
 
 同步还是异步关键看内核空间和用户空间的拷贝过程，也就是阶段二是同步还是异步。
 
-![五种 IO 模型对比](/assets/images/posts/notes/itheima_redis_lesson/advanced/1653912219712.png)
+![五种 IO 模型对比](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/1653912219712.png)
 
 ## 2. Redis 网络模型
 
@@ -194,11 +194,11 @@ epoll模式中如何解决这些问题的？
 
 单线程：
 
-![Redis 单线程网络模型](/assets/images/posts/notes/itheima_redis_lesson/advanced/20220807144942.png)
+![Redis 单线程网络模型](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/20220807144942.png)
 
 多线程：
 
-![Redis 多线程网络模型](/assets/images/posts/notes/itheima_redis_lesson/advanced/20220807145010.png)
+![Redis 多线程网络模型](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/20220807145010.png)
 
 搞不懂了就看看[视频教程](https://www.bilibili.com/video/BV1cr4y1671t?p=171)
 

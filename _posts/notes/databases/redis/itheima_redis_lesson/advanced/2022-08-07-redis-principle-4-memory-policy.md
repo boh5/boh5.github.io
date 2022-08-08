@@ -21,7 +21,7 @@ tags:
 
 Redis本身是一个典型的key-value内存存储数据库，因此所有的key、value都保存在之前学习过的Dict结构中。不过在其database结构体（0-15每个db就是一个该结构体实例）中，有两个Dict：一个用来记录key-value；另一个用来记录key-TTL。
 
-![struct redisDb](/assets/images/posts/notes/itheima_redis_lesson/advanced/1653983423128.png)
+![struct redisDb](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/1653983423128.png)
 
 key 过期后不会立即删除，而是采用惰性删除或周期删除。
 
@@ -72,7 +72,7 @@ Redis支持8种不同策略来选择要删除的key：
 
 RedisObject 记录 LRU 或 LFU 数据：
 
-![RedisObject](/assets/images/posts/notes/itheima_redis_lesson/advanced/1653984029506.png)
+![RedisObject](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/1653984029506.png)
 
 LFU的访问次数之所以叫做**逻辑访问次数**，是因为并不是每次key被访问都计数，而是通过运算：
 
@@ -81,4 +81,4 @@ LFU的访问次数之所以叫做**逻辑访问次数**，是因为并不是每�
 - 如果 R < P ，则计数器 + 1，且最大不超过255
 - 访问次数会随时间衰减，距离上一次访问时间每隔 lfu_decay_time 分钟，计数器 -1
 
-![内存淘汰策略流程图](/assets/images/posts/notes/itheima_redis_lesson/advanced/1653984085095.png)
+![内存淘汰策略流程图](/assets/images/posts/notes/databases/redis/itheima_redis_lesson/advanced/1653984085095.png)
