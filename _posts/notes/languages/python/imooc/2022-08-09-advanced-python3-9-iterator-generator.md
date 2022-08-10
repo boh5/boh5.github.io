@@ -22,6 +22,8 @@ tags:
 - 可迭代对象(Iterable)：实现 `__iter__()` 方法
 - 迭代器(Iterator)：实现 `__iter__()` 和 `__next__()` 方法
 
+![iterable vs iterator](/assets/images/posts/notes/languages/python/imooc/v2-3876b68300a68958eefffe502423be29_1440w.jpg)
+
 <!--more-->
 
 ```python
