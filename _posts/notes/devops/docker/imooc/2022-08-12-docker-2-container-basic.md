@@ -56,13 +56,13 @@ docker + 管理的对象（比如容器，镜像） + 具体操作（比如创�
 
 - attached 模式在前台运行
 - detached 模式在后台运行，`docker container run -d xxx` 开启
-- detached 模式转 attached：`docker attach <ID or Image Name>`
-- detached 模式查看日志：`docker container logs [-f] <ID or Image name>`(-f：动态跟踪打印)
+- detached 模式转 attached：`docker attach <ID or Name>`
+- detached 模式查看日志：`docker container logs [-f] <ID or Name>`(-f：动态跟踪打印)
 
 ## 6. 连接容器的 shell
 
-- `docker container run -it <ID or Image Name> [sh | bash ...]` 创建一个容器并进入交互式模式
-- `docker container exec -it <ID or Image Name> [sh | bash ...]` 在一个已经运行的容器里执行一个额外的command
+- `docker container run -it <ID or Name> [sh | bash ...]` 创建一个容器并进入交互式模式
+- `docker container exec -it <ID or Name> [sh | bash ...]` 在一个已经运行的容器里执行一个额外的command
 
 ## 7. 容器 vs 虚拟机
 
