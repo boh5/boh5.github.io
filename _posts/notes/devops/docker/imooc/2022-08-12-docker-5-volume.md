@@ -9,7 +9,7 @@ categories:
   - docker
 tags:
   - docker
-  - Volume
+  - volume
 ---
 
 Docker主要提供了两种方式做数据的持久化
