@@ -1,6 +1,6 @@
 ---
 title: Redis 分布式缓存
-last_modified_at: 2020-07-30T21:16+08:00
+last_modified_at: 2022-07-30T21:16+08:00
 toc: true
 toc_sticky: true
 excerpt_separator: <!--more-->

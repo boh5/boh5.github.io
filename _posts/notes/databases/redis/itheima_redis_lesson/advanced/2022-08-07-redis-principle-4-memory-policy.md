@@ -1,6 +1,6 @@
 ---
 title: Redis 原理篇（四）内存策略
-last_modified_at: 2020-08-07T19:49+08:00
+last_modified_at: 2022-08-07T19:49+08:00
 toc: true
 toc_sticky: true
 excerpt_separator: <!--more-->
