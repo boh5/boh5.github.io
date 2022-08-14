@@ -1,6 +1,6 @@
 ---
 title: Docker 学习笔记（四）Dockerfile
-last_modified_at: 2020-08-12T18:16+08:00
+last_modified_at: 2020-08-14T14:12+08:00
 toc: true
 toc_sticky: true
 excerpt_separator: <!--more-->
@@ -135,5 +135,7 @@ docker的root权限一直是其遭受诟病的地方，docker的root权限有那
 ```dockerfile
 USER test
 ```
-使用 `USER` 指令指定用户
+- 使用 `USER` 指令指定用户
+- `USER` 指令和 `WORKDIR` 相似，都是改变环境状态并影响以后的层，USER 则是改变之后层的执行 `RUN`, `CMD` 以及 `ENTRYPOINT` 这类命令的身份
+- `USER` 只是帮助你切换到指定用户而已，这个用户**必须**是**事先建立**好的，否则无法切换：`RUN groupadd -r <group-name> && useradd -r -g <group-name> <user-name>`
 
