@@ -1,0 +1,584 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=2"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>Elasticsearch 入门 - 黄波的博客</title><meta name=author content="黄波"><meta name=author-link content="https://dilless.github.io"><meta name=description content="1. 数据格式 将 Elasticsearch 里存储文档数据和关系型数据库 MySQL 存储数据的概念进行一个类比: Types 的概念已经被逐渐弱化，Elasticsearch 6.X 中，一个 index 下已经"><meta name=keywords content="elasticsearch,数据库,基础"><meta itemprop=name content="Elasticsearch 入门"><meta itemprop=description content="1. 数据格式 将 Elasticsearch 里存储文档数据和关系型数据库 MySQL 存储数据的概念进行一个类比: Types 的概念已经被逐渐弱化，Elasticsearch 6.X 中，一个 index 下已经"><meta itemprop=datePublished content="2022-08-08T00:00:00+08:00"><meta itemprop=dateModified content="2022-08-09T19:41:00+08:00"><meta itemprop=wordCount content="2194"><meta itemprop=image content="https://dilless.github.io/logo.png"><meta itemprop=keywords content="elasticsearch,数据库,基础,"><meta property="og:title" content="Elasticsearch 入门"><meta property="og:description" content="1. 数据格式 将 Elasticsearch 里存储文档数据和关系型数据库 MySQL 存储数据的概念进行一个类比: Types 的概念已经被逐渐弱化，Elasticsearch 6.X 中，一个 index 下已经"><meta property="og:type" content="article"><meta property="og:url" content="https://dilless.github.io/posts/notes/databases/elasticsearch/atguigu_elasticsearch_lesson/elasticsearch-basic-usage/"><meta property="og:image" content="https://dilless.github.io/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2022-08-08T00:00:00+08:00"><meta property="article:modified_time" content="2022-08-09T19:41:00+08:00"><meta property="og:site_name" content="黄波的博客"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://dilless.github.io/logo.png"><meta name=twitter:title content="Elasticsearch 入门"><meta name=twitter:description content="1. 数据格式 将 Elasticsearch 里存储文档数据和关系型数据库 MySQL 存储数据的概念进行一个类比: Types 的概念已经被逐渐弱化，Elasticsearch 6.X 中，一个 index 下已经"><meta name=application-name content="黄波的博客"><meta name=apple-mobile-web-app-title content="黄波的博客"><meta name=theme-color media="(prefers-color-scheme: light)" content="#ffffff"><meta name=theme-color media="(prefers-color-scheme: dark)" content="#252627"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://dilless.github.io/posts/notes/databases/elasticsearch/atguigu_elasticsearch_lesson/elasticsearch-basic-usage/><link rel=stylesheet href=/lib/normalize/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><meta name=google-site-verification content="3_Zf27e0mNtTIsBWn36hi_d4KTxPd2Zh1dsZMVnKK8k"><meta name=baidu-site-verification content="code-VsfDko5mls"><meta name=sogou_site_verification content="kS8JMd7SYs"><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Elasticsearch 入门","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/dilless.github.io\/posts\/notes\/databases\/elasticsearch\/atguigu_elasticsearch_lesson\/elasticsearch-basic-usage\/"},"genre":"posts","keywords":"elasticsearch, 数据库, 基础","wordcount":2194,"url":"https:\/\/dilless.github.io\/posts\/notes\/databases\/elasticsearch\/atguigu_elasticsearch_lesson\/elasticsearch-basic-usage\/","datePublished":"2022-08-08T00:00:00+08:00","dateModified":"2022-08-09T19:41:00+08:00","publisher":{"@type":"Organization","name":""},"author":{"@type":"Person","name":"黄波"},"description":""}</script></head><body header-desktop=sticky header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper github-corner=right><div class=header-title><a href=/ title=黄波的博客><img class="lazyload logo" src=/svg/loading.min.svg data-src=/apple-touch-icon.png data-srcset="/apple-touch-icon.png, /apple-touch-icon.png 1.5x, /apple-touch-icon.png 2x" data-sizes=auto alt=黄波的博客 title=黄波的博客><span class=header-title-text>黄波的博客</span></a><span class=header-subtitle>开发、学习、生活、技术分享</span></div><nav><ul class=menu><li class=menu-item><a class=menu-link href=/posts/><i class='fa-solid fa-archive fa-fw fa-sm'></i> 文章</a></li><li class=menu-item><a class=menu-link href=/categories/><i class='fa-solid fa-th fa-fw fa-sm'></i> 分类</a></li><li class=menu-item><a class=menu-link href=/tags/><i class='fa-solid fa-tags fa-fw fa-sm'></i> 标签</a></li><li class="menu-item active" has-children><a class=menu-link href=/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/><i class='fa-solid fa-book fa-fw fa-sm'></i> 学习笔记</a><i class="dropdown-icon fa-solid fa-chevron-down"></i><ul class=sub-menu><li class="menu-item active"><a class=menu-link href=/posts/notes/databases/elasticsearch/atguigu_elasticsearch_lesson/ title="尚硅谷 elasticsearch 教程学习笔记"><i class="fa-solid fa-e"></i> 尚硅谷 elasticsearch 学习笔记</a></li><li class=menu-item><a class=menu-link href=/posts/notes/datastructure_algorithm/zuochengyun/ title=左程云算法课学习笔记><i class="fa-solid fa-infinity"></i> 左程云算法课学习笔记</a></li><li class=menu-item><a class=menu-link href=/posts/notes/devops/docker/imooc/ title="慕课网 docker 教程学习笔记"><i class="fa-brands fa-docker"></i> 慕课网 docker 教程学习笔记</a></li><li class=menu-item><a class=menu-link href=/posts/notes/languages/python/imooc/ title="慕课网 python3 高级编程学习笔记"><i class="fa-brands fa-python"></i> 慕课网 python3 高级编程学习笔记</a></li><li class=menu-item><a class=menu-link href=/posts/notes/databases/redis/itheima_redis_lesson/ title="黑马程序员 redis 学习笔记"><i class="fa-regular fa-registered"></i> 黑马程序员 redis 学习笔记</a></li></ul></li><li class=menu-item><a class=menu-link href=/about/><i class='fa-solid fa-info-circle fa-fw fa-sm'></i> 关于</a></li><li class="menu-item delimiter"></li><li class="menu-item language"><span title=选择语言>简体中文<i class="dropdown-icon fa-solid fa-chevron-down"></i></span><ul class=sub-menu><li class=menu-item>没有更多翻译</li></ul></li><li class="menu-item search" id=search-desktop><input type=text placeholder="搜索文章标题或内容 ..." id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fa-solid fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fa-solid fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fa-solid fa-spinner fa-fw fa-spin"></i></span></li><li class="menu-item theme-switch" title=切换主题><i class="fa-solid fa-adjust fa-fw"></i></li></ul></nav></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=黄波的博客><img class="lazyload logo" src=/svg/loading.min.svg data-src=/apple-touch-icon.png data-srcset="/apple-touch-icon.png, /apple-touch-icon.png 1.5x, /apple-touch-icon.png 2x" data-sizes=auto alt=/apple-touch-icon.png title=/apple-touch-icon.png><span class=header-title-text>黄波的博客</span></a><span class=header-subtitle>开发、学习、生活、技术分享</span></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><nav><ul class=menu id=menu-mobile><li class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder="搜索文章标题或内容 ..." id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fa-solid fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fa-solid fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fa-solid fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></li><li class=menu-item><a class=menu-link href=/posts/><i class='fa-solid fa-archive fa-fw fa-sm'></i> 文章</a></li><li class=menu-item><a class=menu-link href=/categories/><i class='fa-solid fa-th fa-fw fa-sm'></i> 分类</a></li><li class=menu-item><a class=menu-link href=/tags/><i class='fa-solid fa-tags fa-fw fa-sm'></i> 标签</a></li><li class="menu-item active"><span class=nested-item><a class=menu-link href=/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/><i class='fa-solid fa-book fa-fw fa-sm'></i> 学习笔记</a>
+<i class="dropdown-icon fa-solid fa-chevron-right"></i></span><ul class=sub-menu><li class="menu-item active"><a class=menu-link href=/posts/notes/databases/elasticsearch/atguigu_elasticsearch_lesson/ title="尚硅谷 elasticsearch 教程学习笔记"><i class="fa-solid fa-e"></i> 尚硅谷 elasticsearch 学习笔记</a></li><li class=menu-item><a class=menu-link href=/posts/notes/datastructure_algorithm/zuochengyun/ title=左程云算法课学习笔记><i class="fa-solid fa-infinity"></i> 左程云算法课学习笔记</a></li><li class=menu-item><a class=menu-link href=/posts/notes/devops/docker/imooc/ title="慕课网 docker 教程学习笔记"><i class="fa-brands fa-docker"></i> 慕课网 docker 教程学习笔记</a></li><li class=menu-item><a class=menu-link href=/posts/notes/languages/python/imooc/ title="慕课网 python3 高级编程学习笔记"><i class="fa-brands fa-python"></i> 慕课网 python3 高级编程学习笔记</a></li><li class=menu-item><a class=menu-link href=/posts/notes/databases/redis/itheima_redis_lesson/ title="黑马程序员 redis 学习笔记"><i class="fa-regular fa-registered"></i> 黑马程序员 redis 学习笔记</a></li></ul></li><li class=menu-item><a class=menu-link href=/about/><i class='fa-solid fa-info-circle fa-fw fa-sm'></i> 关于</a></li><li class="menu-item theme-switch" title=切换主题><i class="fa-solid fa-adjust fa-fw"></i></li><li class="menu-item language"><span title=选择语言>简体中文<i class="dropdown-icon fa-solid fa-chevron-down"></i></span>
+<select class=language-select onchange="location=this.value"><option disabled>没有更多翻译</option></select></li></ul></nav></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=container page-style=normal><aside class=toc id=toc-auto><h2 class=toc-title>目录 <i class="toc-icon fa-solid fa-angle-down fa-fw"></i></h2><div class=toc-content id=toc-content-auto></div></aside><aside class=aside-custom></aside><article class="page single"><div class=header><h1 class="single-title animate__animated animate__flipInX"><span>Elasticsearch 入门</span></h1></div><div class=post-meta><div class=post-meta-line><span class=post-author><a href=https://dilless.github.io title=作者 target=_blank rel="external nofollow noopener noreferrer author" class=author><i class="fa-solid fa-user-circle"></i>
+黄波</a></span>
+<span class=post-category>收录于 <a href=/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/><i class="fa-regular fa-folder fa-fw"></i>&nbsp;学习笔记</a>&ensp;<a href=/categories/elasticsearch/><i class="fa-regular fa-folder fa-fw"></i>&nbsp;elasticsearch</a></span></div><div class=post-meta-line><span title="2022-08-08 00:00:00"><i class="fa-regular fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2022-08-08>2022-08-08</time>
+</span>&nbsp;<i class="fa-solid fa-pencil-alt fa-fw"></i>&nbsp;约 2194 字&nbsp;
+<i class="fa-regular fa-clock fa-fw"></i>&nbsp;预计阅读 5 分钟&nbsp;</div></div><div class="details toc" id=toc-static kept=false><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fa-solid fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#1-数据格式>1. 数据格式</a></li><li><a href=#2-http-操作>2. HTTP 操作</a><ul><li><a href=#21-索引操作>2.1 索引操作</a><ul><li><a href=#211-创建索引>2.1.1 创建索引</a></li><li><a href=#212-查看单个索引>2.1.2 查看单个索引</a></li><li><a href=#213-查看所有索引>2.1.3 查看所有索引</a></li><li><a href=#214-删除索引>2.1.4 删除索引</a></li></ul></li><li><a href=#22-文档操作>2.2 文档操作</a><ul><li><a href=#221-创建文档>2.2.1 创建文档</a></li><li><a href=#222-查看文档>2.2.2 查看文档</a></li><li><a href=#223-修改文档>2.2.3 修改文档</a></li><li><a href=#224-删除文档>2.2.4 删除文档</a></li></ul></li><li><a href=#23-映射操作>2.3 映射操作</a><ul><li><a href=#231-创建映射>2.3.1 创建映射</a></li><li><a href=#232-查看映射>2.3.2 查看映射</a></li></ul></li></ul></li><li><a href=#3-python-api-操作>3. Python API 操作</a></li></ul></nav></div></div><div class=content id=content><h2 id=1-数据格式>1. 数据格式</h2><p>将 Elasticsearch 里存储文档数据和关系型数据库 MySQL 存储数据的概念进行一个类比:</p><p><img class=lazyload src=/svg/loading.min.svg data-src=images/20220808210116.png data-srcset="/posts/notes/databases/elasticsearch/atguigu_elasticsearch_lesson/elasticsearch-basic-usage/images/20220808210116.png, images/20220808210116.png 1.5x, /posts/notes/databases/elasticsearch/atguigu_elasticsearch_lesson/elasticsearch-basic-usage/images/20220808210116.png 2x" data-sizes=auto alt=/posts/notes/databases/elasticsearch/atguigu_elasticsearch_lesson/elasticsearch-basic-usage/images/20220808210116.png title="ElasticSearch 数据格式"></p><blockquote><p>Types 的概念已经被逐渐弱化，Elasticsearch 6.X 中，一个 index 下已经只能包含一个 type，Elasticsearch 7.X 中, Type 的概念已经被删除了</p></blockquote><h2 id=2-http-操作>2. HTTP 操作</h2><h3 id=21-索引操作>2.1 索引操作</h3><h4 id=211-创建索引>2.1.1 创建索引</h4><p>对比关系型数据库，创建索引就等同于创建数据库。</p><p><strong>PUT</strong>请求创建索引：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-http data-lang=http><span class=line><span class=cl><span class=err>PUT http://127.0.0.1:9200/&lt;索引名称&gt;
+</span></span></span></code></pre></td></tr></table></div></div><p>响应：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;acknowledged&#34;</span><span class=p>:</span> <span class=kc>true</span><span class=p>,</span>  <span class=c1>// 创建成功
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=nt>&#34;shards_acknowledged&#34;</span><span class=p>:</span> <span class=kc>true</span><span class=p>,</span> <span class=c1>// 分片成功
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=nt>&#34;index&#34;</span><span class=p>:</span> <span class=s2>&#34;shopping&#34;</span>  <span class=c1>// 索引名称
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><blockquote><p>由于幂等性，如果重复添加索引，会返回错误信息</p></blockquote><h4 id=212-查看单个索引>2.1.2 查看单个索引</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-http data-lang=http><span class=line><span class=cl><span class=err>GET http://127.0.0.1:9200/&lt;索引名称&gt;
+</span></span></span></code></pre></td></tr></table></div></div><h4 id=213-查看所有索引>2.1.3 查看所有索引</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-http data-lang=http><span class=line><span class=cl><span class=err>GET 127.0.0.1:9200/_cat/indices?v
+</span></span></span></code></pre></td></tr></table></div></div><p><code>_cat</code> 表示查看的意思，<code>indices</code> 表示索引</p><h4 id=214-删除索引>2.1.4 删除索引</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-http data-lang=http><span class=line><span class=cl><span class=err>DELETE http://127.0.0.1:9200/&lt;索引名称&gt;
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=22-文档操作>2.2 文档操作</h3><h4 id=221-创建文档>2.2.1 创建文档</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-http data-lang=http><span class=line><span class=cl><span class=err>POST http://127.0.0.1:9200/&lt;索引名称&gt;/_doc
+</span></span></span></code></pre></td></tr></table></div></div><blockquote><p>此处发送请求的方式必须为 POST，不能是 PUT，否则会发生错误。由于 PUT 是幂等的，每次提交返回因果应该一致，但创建返回的 id 每次不一样</p></blockquote><p>自定义 id：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-http data-lang=http><span class=line><span class=cl><span class=err>POST | PUT http://127.0.0.1:9200/&lt;索引名称&gt;/_doc/&lt;自定义id&gt;
+</span></span></span></code></pre></td></tr></table></div></div><blockquote><p>此处可以用 PUT，因为固定 id 了，满足了幂等性</p></blockquote><h4 id=222-查看文档>2.2.2 查看文档</h4><p>主键查询：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-http data-lang=http><span class=line><span class=cl><span class=err>GET http://127.0.0.1:9200/&lt;索引名称&gt;/_doc/&lt;id&gt;
+</span></span></span></code></pre></td></tr></table></div></div><p>全查询：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-http data-lang=http><span class=line><span class=cl><span class=err>GET http://127.0.0.1:9200/&lt;索引名称&gt;/_search
+</span></span></span></code></pre></td></tr></table></div></div><p>条件查询：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-http data-lang=http><span class=line><span class=cl><span class=err>GET http://127.0.0.1:9200/&lt;索引名称&gt;/_search?q=&lt;查询条件&gt;
+</span></span></span></code></pre></td></tr></table></div></div><p>或在 body 中添加：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;query&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&#34;match&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&#34;category&#34;</span><span class=p>:</span> <span class=s2>&#34;小米&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>分页 body：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;from&#34;</span><span class=p>:</span> <span class=mi>0</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;size&#34;</span><span class=p>:</span> <span class=mi>2</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>指定查询字段 body：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;_source&#34;</span><span class=p>:</span> <span class=p>[</span><span class=s2>&#34;title&#34;</span><span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>排序 body:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;sort&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&#34;price&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&#34;order&#34;</span><span class=p>:</span> <span class=s2>&#34;desc&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=223-修改文档>2.2.3 修改文档</h4><p>覆盖性修改：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-http data-lang=http><span class=line><span class=cl><span class=err>POST | PUT http://127.0.0.1:9200/&lt;索引名称&gt;/_doc/&lt;id&gt;
+</span></span></span></code></pre></td></tr></table></div></div><p>修改字段：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-http data-lang=http><span class=line><span class=cl><span class=err>POST http://127.0.0.1:9200/&lt;索引名称&gt;/_update/&lt;id&gt;
+</span></span></span></code></pre></td></tr></table></div></div><p>body for _update:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;doc&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;&lt;field&gt;&#34;</span><span class=p>:</span> <span class=s2>&#34;&lt;value&gt;&#34;</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=224-删除文档>2.2.4 删除文档</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-http data-lang=http><span class=line><span class=cl><span class=err>DELETE http://127.0.0.1:9200/&lt;索引名称&gt;/_doc/&lt;id&gt;
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=23-映射操作>2.3 映射操作</h3><p>创建数据库表需要设置字段名称，类型，长度，约束等；索引库也一样，需要知道这个类型下有哪些字段，每个字段有哪些约束信息，这就叫做映射(mapping)。</p><h4 id=231-创建映射>2.3.1 创建映射</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-http data-lang=http><span class=line><span class=cl><span class=err>POST http://127.0.0.1:9200/&lt;索引名称&gt;/_mapping
+</span></span></span></code></pre></td></tr></table></div></div><h4 id=232-查看映射>2.3.2 查看映射</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-http data-lang=http><span class=line><span class=cl><span class=err>GET http://127.0.0.1:9200/&lt;索引名称&gt;/_mapping
+</span></span></span></code></pre></td></tr></table></div></div><h2 id=3-python-api-操作>3. Python API 操作</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span><span class=lnt>104
+</span><span class=lnt>105
+</span><span class=lnt>106
+</span><span class=lnt>107
+</span><span class=lnt>108
+</span><span class=lnt>109
+</span><span class=lnt>110
+</span><span class=lnt>111
+</span><span class=lnt>112
+</span><span class=lnt>113
+</span><span class=lnt>114
+</span><span class=lnt>115
+</span><span class=lnt>116
+</span><span class=lnt>117
+</span><span class=lnt>118
+</span><span class=lnt>119
+</span><span class=lnt>120
+</span><span class=lnt>121
+</span><span class=lnt>122
+</span><span class=lnt>123
+</span><span class=lnt>124
+</span><span class=lnt>125
+</span><span class=lnt>126
+</span><span class=lnt>127
+</span><span class=lnt>128
+</span><span class=lnt>129
+</span><span class=lnt>130
+</span><span class=lnt>131
+</span><span class=lnt>132
+</span><span class=lnt>133
+</span><span class=lnt>134
+</span><span class=lnt>135
+</span><span class=lnt>136
+</span><span class=lnt>137
+</span><span class=lnt>138
+</span><span class=lnt>139
+</span><span class=lnt>140
+</span><span class=lnt>141
+</span><span class=lnt>142
+</span><span class=lnt>143
+</span><span class=lnt>144
+</span><span class=lnt>145
+</span><span class=lnt>146
+</span><span class=lnt>147
+</span><span class=lnt>148
+</span><span class=lnt>149
+</span><span class=lnt>150
+</span><span class=lnt>151
+</span><span class=lnt>152
+</span><span class=lnt>153
+</span><span class=lnt>154
+</span><span class=lnt>155
+</span><span class=lnt>156
+</span><span class=lnt>157
+</span><span class=lnt>158
+</span><span class=lnt>159
+</span><span class=lnt>160
+</span><span class=lnt>161
+</span><span class=lnt>162
+</span><span class=lnt>163
+</span><span class=lnt>164
+</span><span class=lnt>165
+</span><span class=lnt>166
+</span><span class=lnt>167
+</span><span class=lnt>168
+</span><span class=lnt>169
+</span><span class=lnt>170
+</span><span class=lnt>171
+</span><span class=lnt>172
+</span><span class=lnt>173
+</span><span class=lnt>174
+</span><span class=lnt>175
+</span><span class=lnt>176
+</span><span class=lnt>177
+</span><span class=lnt>178
+</span><span class=lnt>179
+</span><span class=lnt>180
+</span><span class=lnt>181
+</span><span class=lnt>182
+</span><span class=lnt>183
+</span><span class=lnt>184
+</span><span class=lnt>185
+</span><span class=lnt>186
+</span><span class=lnt>187
+</span><span class=lnt>188
+</span><span class=lnt>189
+</span><span class=lnt>190
+</span><span class=lnt>191
+</span><span class=lnt>192
+</span><span class=lnt>193
+</span><span class=lnt>194
+</span><span class=lnt>195
+</span><span class=lnt>196
+</span><span class=lnt>197
+</span><span class=lnt>198
+</span><span class=lnt>199
+</span><span class=lnt>200
+</span><span class=lnt>201
+</span><span class=lnt>202
+</span><span class=lnt>203
+</span><span class=lnt>204
+</span><span class=lnt>205
+</span><span class=lnt>206
+</span><span class=lnt>207
+</span><span class=lnt>208
+</span><span class=lnt>209
+</span><span class=lnt>210
+</span><span class=lnt>211
+</span><span class=lnt>212
+</span><span class=lnt>213
+</span><span class=lnt>214
+</span><span class=lnt>215
+</span><span class=lnt>216
+</span><span class=lnt>217
+</span><span class=lnt>218
+</span><span class=lnt>219
+</span><span class=lnt>220
+</span><span class=lnt>221
+</span><span class=lnt>222
+</span><span class=lnt>223
+</span><span class=lnt>224
+</span><span class=lnt>225
+</span><span class=lnt>226
+</span><span class=lnt>227
+</span><span class=lnt>228
+</span><span class=lnt>229
+</span><span class=lnt>230
+</span><span class=lnt>231
+</span><span class=lnt>232
+</span><span class=lnt>233
+</span><span class=lnt>234
+</span><span class=lnt>235
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>functools</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>json</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>elasticsearch</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>elasticsearch.helpers</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>elasticsearch_dsl</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>elasticsearch_dsl</span> <span class=kn>import</span> <span class=n>Q</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>pydantic</span> <span class=kn>import</span> <span class=n>BaseModel</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>UserModel</span><span class=p>(</span><span class=n>BaseModel</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>name</span><span class=p>:</span> <span class=nb>str</span>
+</span></span><span class=line><span class=cl>    <span class=n>age</span><span class=p>:</span> <span class=nb>int</span>
+</span></span><span class=line><span class=cl>    <span class=n>sex</span><span class=p>:</span> <span class=nb>str</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>print_returned_value</span><span class=p>(</span><span class=n>func</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@functools</span><span class=o>.</span><span class=n>wraps</span><span class=p>(</span><span class=n>func</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>wrapper</span><span class=p>(</span><span class=o>*</span><span class=n>args</span><span class=p>,</span> <span class=o>**</span><span class=n>kwargs</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=n>rtn</span> <span class=o>=</span> <span class=n>func</span><span class=p>(</span><span class=o>*</span><span class=n>args</span><span class=p>,</span> <span class=o>**</span><span class=n>kwargs</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nb>print</span><span class=p>(</span><span class=n>rtn</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>rtn</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>wrapper</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>print_elasticsearch_exception</span><span class=p>(</span><span class=n>func</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@functools</span><span class=o>.</span><span class=n>wraps</span><span class=p>(</span><span class=n>func</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>wrapper</span><span class=p>(</span><span class=o>*</span><span class=n>args</span><span class=p>,</span> <span class=o>**</span><span class=n>kwargs</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=k>try</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=n>rtn</span> <span class=o>=</span> <span class=n>func</span><span class=p>(</span><span class=o>*</span><span class=n>args</span><span class=p>,</span> <span class=o>**</span><span class=n>kwargs</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>except</span> <span class=n>elasticsearch</span><span class=o>.</span><span class=n>ElasticsearchException</span> <span class=k>as</span> <span class=n>e</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=nb>print</span><span class=p>(</span><span class=nb>str</span><span class=p>(</span><span class=n>e</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>        <span class=k>else</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=n>rtn</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>wrapper</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>ElasticSearchTest</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=fm>__init__</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=bp>self</span><span class=o>.</span><span class=n>client</span> <span class=o>=</span> <span class=n>elasticsearch</span><span class=o>.</span><span class=n>Elasticsearch</span><span class=p>(</span><span class=s1>&#39;http://localhost:9200&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_returned_value</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_elasticsearch_exception</span>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>create_index</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;&#34;&#34; 创建索引 &#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=n>resp</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>client</span><span class=o>.</span><span class=n>indices</span><span class=o>.</span><span class=n>create</span><span class=p>(</span><span class=s1>&#39;user&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>resp</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_returned_value</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_elasticsearch_exception</span>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>get_index</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;&#34;&#34; 查询索引 &#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=n>resp</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>client</span><span class=o>.</span><span class=n>indices</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=s1>&#39;user&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>resp</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_returned_value</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_elasticsearch_exception</span>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>delete_index</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;&#34;&#34; 删除索引 &#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=n>resp</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>client</span><span class=o>.</span><span class=n>indices</span><span class=o>.</span><span class=n>delete</span><span class=p>(</span><span class=s1>&#39;user&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>resp</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_returned_value</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_elasticsearch_exception</span>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>create_doc</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;&#34;&#34; 插入数据 &#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=n>user</span> <span class=o>=</span> <span class=n>UserModel</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>            <span class=n>name</span><span class=o>=</span><span class=s1>&#39;zhangsan&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=n>age</span><span class=o>=</span><span class=mi>30</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=n>sex</span><span class=o>=</span><span class=s1>&#39;男&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>resp</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>client</span><span class=o>.</span><span class=n>create</span><span class=p>(</span><span class=n>index</span><span class=o>=</span><span class=s1>&#39;user&#39;</span><span class=p>,</span> <span class=nb>id</span><span class=o>=</span><span class=mi>1001</span><span class=p>,</span> <span class=n>body</span><span class=o>=</span><span class=n>user</span><span class=o>.</span><span class=n>json</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>resp</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_returned_value</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_elasticsearch_exception</span>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>update_doc</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;&#34;&#34; 更新数据 &#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=n>body</span> <span class=o>=</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=s1>&#39;doc&#39;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=s1>&#39;sex&#39;</span><span class=p>:</span> <span class=s1>&#39;女&#39;</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=n>resp</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>client</span><span class=o>.</span><span class=n>update</span><span class=p>(</span><span class=n>index</span><span class=o>=</span><span class=s1>&#39;user&#39;</span><span class=p>,</span> <span class=nb>id</span><span class=o>=</span><span class=mi>1001</span><span class=p>,</span> <span class=n>body</span><span class=o>=</span><span class=n>json</span><span class=o>.</span><span class=n>dumps</span><span class=p>(</span><span class=n>body</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>resp</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_returned_value</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_elasticsearch_exception</span>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>get_doc</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;&#34;&#34; 查询数据 &#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=n>resp</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>client</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>index</span><span class=o>=</span><span class=s1>&#39;user&#39;</span><span class=p>,</span> <span class=nb>id</span><span class=o>=</span><span class=mi>1001</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>resp</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_returned_value</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_elasticsearch_exception</span>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>delete_doc</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;&#34;&#34; 删除数据 &#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=n>resp</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>client</span><span class=o>.</span><span class=n>delete</span><span class=p>(</span><span class=n>index</span><span class=o>=</span><span class=s1>&#39;user&#39;</span><span class=p>,</span> <span class=nb>id</span><span class=o>=</span><span class=mi>1001</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>resp</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_returned_value</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_elasticsearch_exception</span>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>bulk_create_doc</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;&#34;&#34; 批量创建数据 &#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=n>users</span> <span class=o>=</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>            <span class=n>UserModel</span><span class=p>(</span><span class=n>name</span><span class=o>=</span><span class=s1>&#39;zhangsan&#39;</span><span class=p>,</span> <span class=n>age</span><span class=o>=</span><span class=mi>30</span><span class=p>,</span> <span class=n>sex</span><span class=o>=</span><span class=s1>&#39;男&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>dict</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>            <span class=n>UserModel</span><span class=p>(</span><span class=n>name</span><span class=o>=</span><span class=s1>&#39;lisi&#39;</span><span class=p>,</span> <span class=n>age</span><span class=o>=</span><span class=mi>30</span><span class=p>,</span> <span class=n>sex</span><span class=o>=</span><span class=s1>&#39;女&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>dict</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>            <span class=n>UserModel</span><span class=p>(</span><span class=n>name</span><span class=o>=</span><span class=s1>&#39;wangwu&#39;</span><span class=p>,</span> <span class=n>age</span><span class=o>=</span><span class=mi>40</span><span class=p>,</span> <span class=n>sex</span><span class=o>=</span><span class=s1>&#39;男&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>dict</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>            <span class=n>UserModel</span><span class=p>(</span><span class=n>name</span><span class=o>=</span><span class=s1>&#39;wangwu1&#39;</span><span class=p>,</span> <span class=n>age</span><span class=o>=</span><span class=mi>40</span><span class=p>,</span> <span class=n>sex</span><span class=o>=</span><span class=s1>&#39;女&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>dict</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>            <span class=n>UserModel</span><span class=p>(</span><span class=n>name</span><span class=o>=</span><span class=s1>&#39;wangwu2&#39;</span><span class=p>,</span> <span class=n>age</span><span class=o>=</span><span class=mi>50</span><span class=p>,</span> <span class=n>sex</span><span class=o>=</span><span class=s1>&#39;男&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>dict</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>            <span class=n>UserModel</span><span class=p>(</span><span class=n>name</span><span class=o>=</span><span class=s1>&#39;wangwu3&#39;</span><span class=p>,</span> <span class=n>age</span><span class=o>=</span><span class=mi>50</span><span class=p>,</span> <span class=n>sex</span><span class=o>=</span><span class=s1>&#39;男&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>dict</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=p>]</span>
+</span></span><span class=line><span class=cl>        <span class=n>actions</span> <span class=o>=</span> <span class=p>[]</span>
+</span></span><span class=line><span class=cl>        <span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=nb>len</span><span class=p>(</span><span class=n>users</span><span class=p>)):</span>
+</span></span><span class=line><span class=cl>            <span class=n>actions</span><span class=o>.</span><span class=n>append</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                <span class=p>{</span><span class=s1>&#39;_op_type&#39;</span><span class=p>:</span> <span class=s1>&#39;create&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                 <span class=s1>&#39;_index&#39;</span><span class=p>:</span> <span class=s1>&#39;user&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                 <span class=s1>&#39;_id&#39;</span><span class=p>:</span> <span class=mi>1001</span> <span class=o>+</span> <span class=n>i</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                 <span class=s1>&#39;_source&#39;</span><span class=p>:</span> <span class=n>users</span><span class=p>[</span><span class=n>i</span><span class=p>]}</span>
+</span></span><span class=line><span class=cl>            <span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>resp</span> <span class=o>=</span> <span class=n>elasticsearch</span><span class=o>.</span><span class=n>helpers</span><span class=o>.</span><span class=n>bulk</span><span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>client</span><span class=p>,</span> <span class=n>actions</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>resp</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_returned_value</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_elasticsearch_exception</span>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>bulk_delete_doc</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;&#34;&#34; 批量删除数据 &#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=n>actions</span> <span class=o>=</span> <span class=p>[]</span>
+</span></span><span class=line><span class=cl>        <span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>6</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>            <span class=n>actions</span><span class=o>.</span><span class=n>append</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                <span class=p>{</span><span class=s1>&#39;_op_type&#39;</span><span class=p>:</span> <span class=s1>&#39;delete&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                 <span class=s1>&#39;_index&#39;</span><span class=p>:</span> <span class=s1>&#39;user&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                 <span class=s1>&#39;_id&#39;</span><span class=p>:</span> <span class=mi>1001</span> <span class=o>+</span> <span class=n>i</span><span class=p>}</span>
+</span></span><span class=line><span class=cl>            <span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>resp</span> <span class=o>=</span> <span class=n>elasticsearch</span><span class=o>.</span><span class=n>helpers</span><span class=o>.</span><span class=n>bulk</span><span class=p>(</span><span class=bp>self</span><span class=o>.</span><span class=n>client</span><span class=p>,</span> <span class=n>actions</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>resp</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_returned_value</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_elasticsearch_exception</span>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>search_all_doc</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;&#34;&#34; 查询所有 &#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=n>s</span> <span class=o>=</span> <span class=n>elasticsearch_dsl</span><span class=o>.</span><span class=n>Search</span><span class=p>(</span><span class=n>using</span><span class=o>=</span><span class=bp>self</span><span class=o>.</span><span class=n>client</span><span class=p>,</span> <span class=n>index</span><span class=o>=</span><span class=s1>&#39;user&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>resp</span> <span class=o>=</span> <span class=n>s</span><span class=o>.</span><span class=n>execute</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>resp</span><span class=o>.</span><span class=n>hits</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_returned_value</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_elasticsearch_exception</span>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>search_filtered_doc</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;&#34;&#34; 条件查询 &#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=n>s</span> <span class=o>=</span> <span class=n>elasticsearch_dsl</span><span class=o>.</span><span class=n>Search</span><span class=p>(</span><span class=n>using</span><span class=o>=</span><span class=bp>self</span><span class=o>.</span><span class=n>client</span><span class=p>,</span> <span class=n>index</span><span class=o>=</span><span class=s1>&#39;user&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>filter</span><span class=p>(</span><span class=s1>&#39;term&#39;</span><span class=p>,</span> <span class=n>age</span><span class=o>=</span><span class=mi>30</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>resp</span> <span class=o>=</span> <span class=n>s</span><span class=o>.</span><span class=n>execute</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>resp</span><span class=o>.</span><span class=n>hits</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_returned_value</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_elasticsearch_exception</span>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>search_paginated_doc</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;&#34;&#34; 分页查询 elasticsearch_dsl 依赖 slicing 分页 &#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=n>s</span> <span class=o>=</span> <span class=n>elasticsearch_dsl</span><span class=o>.</span><span class=n>Search</span><span class=p>(</span><span class=n>using</span><span class=o>=</span><span class=bp>self</span><span class=o>.</span><span class=n>client</span><span class=p>,</span> <span class=n>index</span><span class=o>=</span><span class=s1>&#39;user&#39;</span><span class=p>)[</span><span class=mi>2</span><span class=p>:</span><span class=mi>4</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>        <span class=n>resp</span> <span class=o>=</span> <span class=n>s</span><span class=o>.</span><span class=n>execute</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>resp</span><span class=o>.</span><span class=n>hits</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_returned_value</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_elasticsearch_exception</span>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>search_ordered_doc</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;&#34;&#34; 排序查询 `-` 代表 DESC &#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=n>s</span> <span class=o>=</span> <span class=n>elasticsearch_dsl</span><span class=o>.</span><span class=n>Search</span><span class=p>(</span><span class=n>using</span><span class=o>=</span><span class=bp>self</span><span class=o>.</span><span class=n>client</span><span class=p>,</span> <span class=n>index</span><span class=o>=</span><span class=s1>&#39;user&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>sort</span><span class=p>(</span><span class=s1>&#39;-age&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>resp</span> <span class=o>=</span> <span class=n>s</span><span class=o>.</span><span class=n>execute</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>resp</span><span class=o>.</span><span class=n>hits</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_returned_value</span>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_elasticsearch_exception</span>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>search_field_doc</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;&#34;&#34; 指定或排除字段查询 &#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=n>includes</span> <span class=o>=</span> <span class=p>[]</span>
+</span></span><span class=line><span class=cl>        <span class=n>excludes</span> <span class=o>=</span> <span class=p>[</span><span class=s1>&#39;age&#39;</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>        <span class=n>s</span> <span class=o>=</span> <span class=n>elasticsearch_dsl</span><span class=o>.</span><span class=n>Search</span><span class=p>(</span><span class=n>using</span><span class=o>=</span><span class=bp>self</span><span class=o>.</span><span class=n>client</span><span class=p>,</span> <span class=n>index</span><span class=o>=</span><span class=s1>&#39;user&#39;</span><span class=p>)</span> \
+</span></span><span class=line><span class=cl>            <span class=o>.</span><span class=n>source</span><span class=p>(</span><span class=n>includes</span><span class=o>=</span><span class=n>includes</span><span class=p>,</span> <span class=n>excludes</span><span class=o>=</span><span class=n>excludes</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>resp</span> <span class=o>=</span> <span class=n>s</span><span class=o>.</span><span class=n>execute</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>resp</span><span class=o>.</span><span class=n>hits</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_elasticsearch_exception</span>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>search_multi_filter_doc</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;&#34;&#34; 组合条件 Q 组合(| &amp; ~)会自动生成 bool : should must must_not&#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=n>s</span> <span class=o>=</span> <span class=n>elasticsearch_dsl</span><span class=o>.</span><span class=n>Search</span><span class=p>(</span><span class=n>using</span><span class=o>=</span><span class=bp>self</span><span class=o>.</span><span class=n>client</span><span class=p>,</span> <span class=n>index</span><span class=o>=</span><span class=s1>&#39;user&#39;</span><span class=p>)</span> \
+</span></span><span class=line><span class=cl>            <span class=o>.</span><span class=n>query</span><span class=p>(</span><span class=n>Q</span><span class=p>(</span><span class=s1>&#39;match&#39;</span><span class=p>,</span> <span class=n>age</span><span class=o>=</span><span class=mi>30</span><span class=p>)</span> <span class=o>&amp;</span> <span class=o>~</span><span class=n>Q</span><span class=p>(</span><span class=s1>&#39;match&#39;</span><span class=p>,</span> <span class=n>sex</span><span class=o>=</span><span class=s1>&#39;男&#39;</span><span class=p>))</span>  <span class=c1># ~ 表示 not</span>
+</span></span><span class=line><span class=cl>        <span class=n>resp</span> <span class=o>=</span> <span class=n>s</span><span class=o>.</span><span class=n>execute</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=nb>print</span><span class=p>(</span><span class=n>resp</span><span class=o>.</span><span class=n>hits</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=n>s</span> <span class=o>=</span> <span class=n>elasticsearch_dsl</span><span class=o>.</span><span class=n>Search</span><span class=p>(</span><span class=n>using</span><span class=o>=</span><span class=bp>self</span><span class=o>.</span><span class=n>client</span><span class=p>,</span> <span class=n>index</span><span class=o>=</span><span class=s1>&#39;user&#39;</span><span class=p>)</span> \
+</span></span><span class=line><span class=cl>            <span class=o>.</span><span class=n>query</span><span class=p>(</span><span class=n>Q</span><span class=p>(</span><span class=s1>&#39;match&#39;</span><span class=p>,</span> <span class=n>age</span><span class=o>=</span><span class=mi>30</span><span class=p>)</span> <span class=o>|</span> <span class=n>Q</span><span class=p>(</span><span class=s1>&#39;match&#39;</span><span class=p>,</span> <span class=n>age</span><span class=o>=</span><span class=mi>40</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>        <span class=n>resp</span> <span class=o>=</span> <span class=n>s</span><span class=o>.</span><span class=n>execute</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=nb>print</span><span class=p>(</span><span class=n>resp</span><span class=o>.</span><span class=n>hits</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_elasticsearch_exception</span>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>search_range_doc</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;&#34;&#34; 范围查询 &#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=n>s</span> <span class=o>=</span> <span class=n>elasticsearch_dsl</span><span class=o>.</span><span class=n>Search</span><span class=p>(</span><span class=n>using</span><span class=o>=</span><span class=bp>self</span><span class=o>.</span><span class=n>client</span><span class=p>,</span> <span class=n>index</span><span class=o>=</span><span class=s1>&#39;user&#39;</span><span class=p>)</span> \
+</span></span><span class=line><span class=cl>            <span class=o>.</span><span class=n>filter</span><span class=p>(</span><span class=s1>&#39;range&#39;</span><span class=p>,</span> <span class=n>age</span><span class=o>=</span><span class=p>{</span><span class=s1>&#39;gte&#39;</span><span class=p>:</span> <span class=mi>30</span><span class=p>,</span> <span class=s1>&#39;lt&#39;</span><span class=p>:</span> <span class=mi>50</span><span class=p>})</span>
+</span></span><span class=line><span class=cl>        <span class=n>resp</span> <span class=o>=</span> <span class=n>s</span><span class=o>.</span><span class=n>execute</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=nb>print</span><span class=p>(</span><span class=n>resp</span><span class=o>.</span><span class=n>hits</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_elasticsearch_exception</span>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>search_fuzzy_queried_doc</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;&#34;&#34; 模糊查询 &#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=n>s</span> <span class=o>=</span> <span class=n>elasticsearch_dsl</span><span class=o>.</span><span class=n>Search</span><span class=p>(</span><span class=n>using</span><span class=o>=</span><span class=bp>self</span><span class=o>.</span><span class=n>client</span><span class=p>,</span> <span class=n>index</span><span class=o>=</span><span class=s1>&#39;user&#39;</span><span class=p>)</span> \
+</span></span><span class=line><span class=cl>            <span class=o>.</span><span class=n>query</span><span class=p>(</span><span class=n>Q</span><span class=p>({</span><span class=s1>&#39;fuzzy&#39;</span><span class=p>:</span> <span class=p>{</span><span class=s2>&#34;name&#34;</span><span class=p>:</span> <span class=p>{</span><span class=s2>&#34;value&#34;</span><span class=p>:</span> <span class=s2>&#34;wangwu&#34;</span><span class=p>,</span> <span class=s2>&#34;fuzziness&#34;</span><span class=p>:</span> <span class=mi>1</span><span class=p>}}}))</span>
+</span></span><span class=line><span class=cl>        <span class=n>resp</span> <span class=o>=</span> <span class=n>s</span><span class=o>.</span><span class=n>execute</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=nb>print</span><span class=p>(</span><span class=n>resp</span><span class=o>.</span><span class=n>hits</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_elasticsearch_exception</span>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>search_highlight_doc</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;&#34;&#34; 高亮查询 &#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=n>s</span> <span class=o>=</span> <span class=n>elasticsearch_dsl</span><span class=o>.</span><span class=n>Search</span><span class=p>(</span><span class=n>using</span><span class=o>=</span><span class=bp>self</span><span class=o>.</span><span class=n>client</span><span class=p>,</span> <span class=n>index</span><span class=o>=</span><span class=s1>&#39;user&#39;</span><span class=p>)</span> \
+</span></span><span class=line><span class=cl>            <span class=o>.</span><span class=n>query</span><span class=p>(</span><span class=s1>&#39;match&#39;</span><span class=p>,</span> <span class=n>name</span><span class=o>=</span><span class=s1>&#39;zhangsan&#39;</span><span class=p>)</span> \
+</span></span><span class=line><span class=cl>            <span class=o>.</span><span class=n>highlight</span><span class=p>(</span><span class=s1>&#39;name&#39;</span><span class=p>,</span> <span class=n>pre_tags</span><span class=o>=</span><span class=s1>&#39;&lt;font color=&#34;red&#34;&gt;&#39;</span><span class=p>,</span> <span class=n>post_tags</span><span class=o>=</span><span class=s1>&#39;&lt;/font&gt;&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>resp</span> <span class=o>=</span> <span class=n>s</span><span class=o>.</span><span class=n>execute</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=nb>print</span><span class=p>(</span><span class=n>resp</span><span class=o>.</span><span class=n>hits</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nb>print</span><span class=p>(</span><span class=n>resp</span><span class=o>.</span><span class=n>hits</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span><span class=o>.</span><span class=n>meta</span><span class=o>.</span><span class=n>highlight</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nd>@print_elasticsearch_exception</span>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>search_agg_doc</span><span class=p>(</span><span class=bp>self</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;&#34;&#34; 聚合查询 &#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=n>s</span> <span class=o>=</span> <span class=n>elasticsearch_dsl</span><span class=o>.</span><span class=n>Search</span><span class=p>(</span><span class=n>using</span><span class=o>=</span><span class=bp>self</span><span class=o>.</span><span class=n>client</span><span class=p>,</span> <span class=n>index</span><span class=o>=</span><span class=s1>&#39;user&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>s</span><span class=o>.</span><span class=n>aggs</span><span class=o>.</span><span class=n>metric</span><span class=p>(</span><span class=s1>&#39;max_age&#39;</span><span class=p>,</span> <span class=s1>&#39;max&#39;</span><span class=p>,</span> <span class=n>field</span><span class=o>=</span><span class=s1>&#39;age&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>resp</span> <span class=o>=</span> <span class=n>s</span><span class=o>.</span><span class=n>execute</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=nb>print</span><span class=p>(</span><span class=n>resp</span><span class=o>.</span><span class=n>aggs</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1># 分组</span>
+</span></span><span class=line><span class=cl>        <span class=n>s</span> <span class=o>=</span> <span class=n>elasticsearch_dsl</span><span class=o>.</span><span class=n>Search</span><span class=p>(</span><span class=n>using</span><span class=o>=</span><span class=bp>self</span><span class=o>.</span><span class=n>client</span><span class=p>,</span> <span class=n>index</span><span class=o>=</span><span class=s1>&#39;user&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>s</span><span class=o>.</span><span class=n>aggs</span><span class=o>.</span><span class=n>bucket</span><span class=p>(</span><span class=s1>&#39;age_group&#39;</span><span class=p>,</span> <span class=s1>&#39;terms&#39;</span><span class=p>,</span> <span class=n>field</span><span class=o>=</span><span class=s1>&#39;age&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>resp</span> <span class=o>=</span> <span class=n>s</span><span class=o>.</span><span class=n>execute</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=nb>print</span><span class=p>(</span><span class=n>resp</span><span class=o>.</span><span class=n>aggs</span><span class=o>.</span><span class=n>age_group</span><span class=o>.</span><span class=n>buckets</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span title="2022-08-09 19:41:00">更新于 2022-08-09</span></div><div class=post-info-license><span><a rel="license external nofollow noopener noreferrer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div><div class=post-info-line><div class=post-info-md><span><a href=/posts/notes/databases/elasticsearch/atguigu_elasticsearch_lesson/elasticsearch-basic-usage/index.md title=阅读原始文档 class=link-to-markdown>阅读原始文档</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://dilless.github.io/posts/notes/databases/elasticsearch/atguigu_elasticsearch_lesson/elasticsearch-basic-usage/ data-title="Elasticsearch 入门" data-hashtags=elasticsearch,数据库,基础><i class="fa-brands fa-twitter fa-fw"></i></a>
+<a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://dilless.github.io/posts/notes/databases/elasticsearch/atguigu_elasticsearch_lesson/elasticsearch-basic-usage/ data-hashtag=elasticsearch><i class="fa-brands fa-facebook-square fa-fw"></i></a>
+<a href=javascript:void(0); title="分享到 WhatsApp" data-sharer=whatsapp data-url=https://dilless.github.io/posts/notes/databases/elasticsearch/atguigu_elasticsearch_lesson/elasticsearch-basic-usage/ data-title="Elasticsearch 入门" data-web><i class="fa-brands fa-whatsapp fa-fw"></i></a>
+<a href=javascript:void(0); title="分享到 Line" data-sharer=line data-url=https://dilless.github.io/posts/notes/databases/elasticsearch/atguigu_elasticsearch_lesson/elasticsearch-basic-usage/ data-title="Elasticsearch 入门"><i data-svg-src=/lib/simple-icons/icons/line.min.svg></i></a>
+<a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://dilless.github.io/posts/notes/databases/elasticsearch/atguigu_elasticsearch_lesson/elasticsearch-basic-usage/ data-title="Elasticsearch 入门"><i class="fa-brands fa-weibo fa-fw"></i></a>
+<a href=javascript:void(0); title="分享到 Myspace" data-sharer=myspace data-url=https://dilless.github.io/posts/notes/databases/elasticsearch/atguigu_elasticsearch_lesson/elasticsearch-basic-usage/ data-title="Elasticsearch 入门" data-description><i data-svg-src=/lib/simple-icons/icons/myspace.min.svg></i></a>
+<a href=javascript:void(0); title="分享到 Blogger" data-sharer=blogger data-url=https://dilless.github.io/posts/notes/databases/elasticsearch/atguigu_elasticsearch_lesson/elasticsearch-basic-usage/ data-title="Elasticsearch 入门" data-description><i class="fa-brands fa-blogger fa-fw"></i></a>
+<a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://dilless.github.io/posts/notes/databases/elasticsearch/atguigu_elasticsearch_lesson/elasticsearch-basic-usage/ data-title="Elasticsearch 入门"><i class="fa-brands fa-evernote fa-fw"></i></a></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fa-solid fa-tags fa-fw"></i>&nbsp;<a href=/tags/elasticsearch/>elasticsearch</a>,&nbsp;<a href=/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/>数据库</a>,&nbsp;<a href=/tags/%E5%9F%BA%E7%A1%80/>基础</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav></div></div><div id=comments><div id=giscus><script src=https://giscus.app/client.js data-repo=dilless/dilless.github.io data-repo-id=R_kgDOHr9Jag data-category=Announcements data-category-id=DIC_kwDOHr9Jas4CQ396 data-mapping=title data-theme=preferred_color_scheme data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-lang=zh-CN data-loading=lazy crossorigin=anonymous async defer></script><noscript>Please enable JavaScript to view the comments powered by <a href=https://giscus.app/ rel="external nofollow noopener noreferrer">giscus</a>.</noscript></div></div></article></main><footer class=footer><div class=footer-container><div class="footer-line powered">由 <a href=https://gohugo.io/ target=_blank rel="external nofollow noopener noreferrer" title="Hugo 0.101.0">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/hugo-fixit/FixIt target=_blank rel="external nofollow noopener noreferrer" title="FixIt v0.2.16-RC"><img class=fixit-icon src=/images/fixit.svg alt="FixIt logo">&nbsp;FixIt</a></div><div class="footer-line copyright"><i class="fa-regular fa-copyright fa-fw"></i>
+<span itemprop=copyrightYear>2022</span><span class=author itemprop=copyrightHolder>
+<a href=https://dilless.github.io target=_blank rel="external nofollow noopener noreferrer">黄波</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line ibruce"><span id=busuanzi_container_site_uv title=总访客数><i class="fa-regular fa-user fa-fw"></i>&nbsp;<span id=busuanzi_value_site_uv><i class="fa fa-spinner fa-spin fa-fw"></i></span></span><span id=busuanzi_container_site_pv class=footer-divider title=总访问量><i class="fa-regular fa-eye fa-fw"></i>&nbsp;<span id=busuanzi_value_site_pv><i class="fa fa-spinner fa-spin fa-fw"></i></span></span></div></div></footer></div><div class=widgets><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fa-solid fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fa-solid fa-comment fa-fw"></i></a></div><a href=https://github.com/dilless title="在 GitHub 上找到我" target=_blank rel="external nofollow noopener noreferrer" class="github-corner right d-none-mobile"><svg viewBox="0 0 250 250" aria-hidden="true"><path d="M0 0 115 115h15l12 27L250 250V0z"/><path d="M128.3 109C113.8 99.7 119 89.6 119 89.6 122 82.7 120.5 78.6 120.5 78.6 119.2 72 123.4 76.3 123.4 76.3 127.3 80.9 125.5 87.3 125.5 87.3 122.9 97.6 130.6 101.9 134.4 103.2" fill="currentcolor" style="transform-origin:130px 106px" class="octo-arm"/><path d="M115 115C114.9 115.1 118.7 116.5 119.8 115.4l13.9-13.8C136.9 99.2 139.9 98.4 142.2 98.6 133.8 88 127.5 74.4 143.8 58 148.5 53.4 154 51.2 159.7 51 160.3 49.4 163.2 43.6 171.4 40.1 171.4 40.1 176.1 42.5 178.8 56.2 183.1 58.6 187.2 61.8 190.9 65.4 194.5 69 197.7 73.2 200.1 77.6 213.8 80.2 216.3 84.9 216.3 84.9 212.7 93.1 206.9 96 205.4 96.6 205.1 102.4 203 107.8 198.3 112.5 181.9 128.9 168.3 122.5 157.7 114.1 157.9 116.9 156.7 120.9 152.7 124.9L141 136.5C139.8 137.7 141.6 141.9 141.8 141.8z" fill="currentcolor" class="octo-body"/></svg></a><div id=mask></div></div><link rel=stylesheet href=/lib/katex/katex.min.css><link rel=stylesheet href=/lib/katex/copy-tex.min.css><link rel=stylesheet href=/lib/cookieconsent/cookieconsent.min.css><script type=text/javascript src=/lib/autocomplete/autocomplete.min.js defer></script><script type=text/javascript src=/lib/lunr/lunr.min.js defer></script><script type=text/javascript src=/lib/lunr/lunr.stemmer.support.min.js defer></script><script type=text/javascript src=/lib/lunr/lunr.zh.min.js defer></script><script type=text/javascript src=/lib/lazysizes/lazysizes.min.js async defer></script><script type=text/javascript src=/lib/sharer/sharer.min.js async defer></script><script type=text/javascript src=/lib/katex/katex.min.js defer></script><script type=text/javascript src=/lib/katex/auto-render.min.js defer></script><script type=text/javascript src=/lib/katex/copy-tex.min.js defer></script><script type=text/javascript src=/lib/katex/mhchem.min.js defer></script><script type=text/javascript src=/lib/cookieconsent/cookieconsent.min.js defer></script><script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async defer></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",editLockTitle:"锁定可编辑代码块",editUnLockTitle:"解锁可编辑代码块",editable:!0,maxShownLines:10},comment:{giscus:{darkTheme:"dark",lightTheme:"light"}},cookieconsent:{content:{dismiss:"同意",link:"了解更多",message:"本网站使用 Cookies 来改善您的浏览体验。"},enable:!0,palette:{button:{background:"#f0f0f0"},popup:{background:"#1aa3ff"}},theme:"edgeless"},enablePWA:!0,math:{delimiters:[{display:!0,left:"$$",right:"$$"},{display:!0,left:"\\[",right:"\\]"},{display:!1,left:"$",right:"$"},{display:!1,left:"\\(",right:"\\)"}],strict:!1},search:{highlightTag:"em",lunrIndexURL:"/index.json",lunrLanguageCode:"zh",lunrSegmentitURL:"/lib/lunr/lunr.segmentit.js",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"lunr"}}</script><script type=text/javascript src=/js/theme.min.js defer></script><script type=text/javascript src=/js/_custom.min.js defer></script></body></html>
