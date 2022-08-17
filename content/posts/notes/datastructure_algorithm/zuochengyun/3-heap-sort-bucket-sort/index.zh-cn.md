@@ -198,11 +198,11 @@ def shift_down(arr: list[int], index: int, size: int) -> None:
 #         parent = max((index - 1) // 2, 0)
 ```
 
-- 时间复杂度：O(NlogN)
-- 空间复杂度：O(1)
+- 时间复杂度：$O(NlogN)$
+- 空间复杂度：$O(1)$
 - **优先级队列**结构就是**堆结构**
 
-> 建堆的时候用 `shift_up` 时间复杂度为 O(NlogN)，而先把整个数组作为堆，再从最后位置开始 `shift_up`，时间复杂度可将为 O(N)(错位相减法求时间复杂度)
+> 建堆的时候用 `shift_up` 时间复杂度为 $O(NlogN)$，而先把整个数组作为堆，再从最后位置开始 `shift_up`，时间复杂度可将为 $O(N)$(错位相减法求时间复杂度)
 
 算法题：
 
