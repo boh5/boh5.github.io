@@ -3,8 +3,8 @@
 
 ## 1. 时间复杂度
 
-- 时间复杂度：算法总操作数的表达式中，只要高阶项，不要高阶项的系数，剩下的部分假设为 f(n)，则时间复杂度为 O(f(n))
-- O(f(n)) 按照算法可能遇到的**最差**的情况估计
+- 时间复杂度：算法总操作数的表达式中，只要高阶项，不要高阶项的系数，剩下的部分假设为 $f(n)$，则时间复杂度为 $O(f(n))$
+- $O(f(n))$ 按照算法可能遇到的**最差**的情况估计
 - 如果两个算法复杂度相同，很难区分哪个更好，可以通过测试的方式，确定选择
 
 ## 2. 位运算
@@ -27,8 +27,8 @@ a = a ^ b  # a = a ^ b ^ a = b, b = a
 > a、b 的值可以一样，但不能是同一块内存空间，否则会抹成0，如 a, b 是 list 中相同的 index
 
 Question：
-1. [136. 只出现一次的数字](https://leetcode.cn/problems/single-number/)，要求：时间复杂度O(n)，空间复杂度O(1)
-2. [260. 只出现一次的数字 III](https://leetcode.cn/problems/single-number-iii/)，要求：时间复杂度O(n)，空间复杂度O(1)
+1. [136. 只出现一次的数字](https://leetcode.cn/problems/single-number/)，要求：时间复杂度$O(n)$，空间复杂度$O(1)$
+2. [260. 只出现一次的数字 III](https://leetcode.cn/problems/single-number-iii/)，要求：时间复杂度$O(n)$，空间复杂度$O(1)$
   - 提取一个数二进制位中最右侧的 1(其他位都置为 0): `a & (~a + 1)`
 
 
@@ -50,7 +50,7 @@ def selection_sort(arr: List[int]):
         arr[i], arr[min_index] = arr[min_index], arr[i]
 ```
 
-时间复杂度：O(n^2)
+时间复杂度：$O(n^2)$
 
 ### 3.2 冒泡排序
 
@@ -66,7 +66,7 @@ def bubble_sort(arr: List[int]):
 
 ```
 
-时间复杂度：O(n^2)
+时间复杂度：$O(n^2)$
 
 ### 3.3 插入排序
 
@@ -83,13 +83,13 @@ def selection_sort(arr: List[int]):
         arr[i] = cur_num
 ```
 
-时间复杂度：O(n^2)；最好的情况（数组已经有序）下，时间复杂度O(n)
+时间复杂度：$O(n^2)$；最好的情况（数组已经有序）下，时间复杂度$O(n)$
 
 ## 4. 二分查找
 
 ### 4.1 有序数组中，找某个数是否存在
 
-时间复杂度：O(log_2 N)、O(logN)
+时间复杂度：$O(log_2 N)$、$O(logN)$
 
 
 ### 4.2 有序数组中，找 >= 某个数最左侧的位置
@@ -126,17 +126,17 @@ def selection_sort(arr: List[int]):
 
 master 公式，如果调用子问题规模相等，可以用该公式求时间复杂度：
 
-T(N) = a * T(N / b) + O(N ^ d)
+$$T(N) = a * T(N / b) + O(N ^ d)$$
 
-- T(N)：母问题的数据量为 N
-- T(N / b)：子问题的规模是 N / b
-- a：子问题调用次数
-- O(N ^ d)：除了子问题调用，剩下的过程的时间复杂度
+- $T(N)$：母问题的数据量为 $N$
+- $T(N / b)$：子问题的规模是 $N / b$
+- $a$：子问题调用次数
+- $O(N ^ d)$：除了子问题调用，剩下的过程的时间复杂度
 
 求解时间复杂度：
-1. 如果 log_b a > d: O(N ^(log_b a))
-2. 如果 log_b a == d: O((N ^ d) * log N)
-3. 如果 log_b a < d: O(N ^ d)
+1. 如果 $log_b a > d$: $O(N ^ (log_b a))$
+2. 如果 $log_b a == d$: $O((N ^ d) * log N)$
+3. 如果 $log_b a < d$: $O(N ^ d)$
 
 
 ---
