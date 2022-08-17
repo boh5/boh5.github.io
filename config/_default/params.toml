@@ -582,7 +582,7 @@ thumbnailUrl = ""
 
 #  网站分析配置
 [analytics]
-enable = false
+enable = true
 # Google Analytics
 [analytics.google]
 id = "G-Y7BJE11JP4"
