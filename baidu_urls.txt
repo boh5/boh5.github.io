@@ -13,11 +13,8 @@ https://dilless.github.io/posts/notes/devops/docker/imooc/3-image/
 https://dilless.github.io/posts/notes/devops/docker/imooc/4-dockerfile/
 https://dilless.github.io/posts/notes/devops/docker/imooc/5-volume/
 https://dilless.github.io/posts/notes/languages/python/imooc/13-asyncio/
-https://dilless.github.io/posts/notes/languages/python/imooc_backup/2022-08-11-advanced-python3-13-asyncio/
 https://dilless.github.io/posts/notes/languages/python/imooc/12-coroutine/
-https://dilless.github.io/posts/notes/languages/python/imooc_backup/2022-08-10-advanced-python3-12-coroutine/
 https://dilless.github.io/posts/notes/languages/python/imooc/9-iterator-generator/
-https://dilless.github.io/posts/notes/languages/python/imooc_backup/2022-08-09-advanced-python3-9-iterator-generator/
 https://dilless.github.io/posts/notes/databases/elasticsearch/atguigu_elasticsearch_lesson/elasticsearch-basic-usage/
 https://dilless.github.io/posts/notes/databases/redis/itheima_redis_lesson/advanced/7-redis-principle-4-memory-policy/
 https://dilless.github.io/posts/notes/databases/redis/itheima_redis_lesson/advanced/5-redis-principle-3-resp-protocol/
