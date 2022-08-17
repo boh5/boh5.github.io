@@ -1,0 +1,40 @@
+[[main]]
+identifier = "posts"
+pre = "<i class='fa-solid fa-archive fa-fw fa-sm'></i>"
+post = ""
+name = "文章"
+url = "/posts/"
+title = ""
+weight = 1
+[[main]]
+identifier = "categories"
+pre = "<i class='fa-solid fa-th fa-fw fa-sm'></i>"
+post = ""
+name = "分类"
+url = "/categories/"
+title = ""
+weight = 2
+[[main]]
+identifier = "tags"
+pre = "<i class='fa-solid fa-tags fa-fw fa-sm'></i>"
+post = ""
+name = "标签"
+url = "/tags/"
+title = ""
+weight = 3
+[[main]]
+identifier = "notes"
+pre = "<i class='fa-solid fa-book fa-fw fa-sm'></i>"
+post = ""
+name = "学习笔记"
+url = "/categories/学习笔记/"
+title = ""
+weight = 4
+[[main]]
+identifier = "about"
+pre = "<i class='fa-solid fa-info-circle fa-fw fa-sm'></i>"
+post = ""
+name = "关于"
+url = "/about/"
+title = ""
+weight = 5
