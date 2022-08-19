@@ -402,5 +402,5 @@ kubectl [command] [type] [name] [flags]
 ---
 
 > 作者: [黄波](https://dilless.github.io)  
-> URL: https://dilless.github.io/posts/notes/devops/k8s/itheima/1-k8s-start/  
+> URL: https://dilless.github.io/posts/notes/devops/k8s/itheima/1-k8s-base/  
 
