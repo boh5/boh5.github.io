@@ -2,13 +2,11 @@ https://dilless.github.io/posts/notes/devops/k8s/itheima/2-k8s-getting-start/
 https://dilless.github.io/posts/notes/devops/k8s/itheima/1-k8s-base/
 https://dilless.github.io/posts/notes/devops/docker/imooc/12-docker-security/
 https://dilless.github.io/posts/notes/devops/docker/imooc/11-docker-cicd-with-git/
-https://dilless.github.io/posts/notes/datastructure_algorithm/zuochengyun/3-heap-sort-bucket-sort/
 https://dilless.github.io/posts/notes/devops/docker/imooc/8-docker-swarm/
 https://dilless.github.io/posts/notes/devops/docker/imooc/9-docker-vs-podman/
 https://dilless.github.io/posts/notes/devops/docker/imooc/10-docker-arch/
-https://dilless.github.io/posts/notes/datastructure_algorithm/zuochengyun/2-nlogn-sort/
 https://dilless.github.io/posts/notes/devops/docker/imooc/7-docker-compose/
-https://dilless.github.io/posts/notes/datastructure_algorithm/zuochengyun/1-complexity-and-simple-sort-algorithm/
+https://dilless.github.io/posts/notes/datastructure_algorithm/zuochengyun/1-sort-algorithms/
 https://dilless.github.io/posts/notes/devops/docker/imooc/6-network/
 https://dilless.github.io/posts/notes/devops/docker/imooc/2-container-basic/
 https://dilless.github.io/posts/notes/devops/docker/imooc/3-image/
