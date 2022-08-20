@@ -1,0 +1,871 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=2"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>K8s 学习笔记（三）Pod 详解 - 黄波的博客</title><meta name=author content="黄波"><meta name=author-link content="https://dilless.github.io"><meta name=description content="1. Pod 介绍 1.1 Pod 结构 每个Pod中都可以包含一个或者多个容器，这些容器可以分为两类： 用户程序所在的容器，数量可多可少 Pause容器，这是每个Pod"><meta name=keywords content="K8s,Kubernetes,pod"><meta itemprop=name content="K8s 学习笔记（三）Pod 详解"><meta itemprop=description content="1. Pod 介绍 1.1 Pod 结构 每个Pod中都可以包含一个或者多个容器，这些容器可以分为两类： 用户程序所在的容器，数量可多可少 Pause容器，这是每个Pod"><meta itemprop=datePublished content="2022-08-20T00:00:00+08:00"><meta itemprop=dateModified content="2022-08-20T19:41:00+08:00"><meta itemprop=wordCount content="8750"><meta itemprop=image content="https://dilless.github.io/logo.png"><meta itemprop=keywords content="K8s,Kubernetes,pod,"><meta property="og:title" content="K8s 学习笔记（三）Pod 详解"><meta property="og:description" content="1. Pod 介绍 1.1 Pod 结构 每个Pod中都可以包含一个或者多个容器，这些容器可以分为两类： 用户程序所在的容器，数量可多可少 Pause容器，这是每个Pod"><meta property="og:type" content="article"><meta property="og:url" content="https://dilless.github.io/posts/notes/devops/k8s/itheima/3-k8s-pod-advanced/"><meta property="og:image" content="https://dilless.github.io/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2022-08-20T00:00:00+08:00"><meta property="article:modified_time" content="2022-08-20T19:41:00+08:00"><meta property="og:site_name" content="黄波的博客"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://dilless.github.io/logo.png"><meta name=twitter:title content="K8s 学习笔记（三）Pod 详解"><meta name=twitter:description content="1. Pod 介绍 1.1 Pod 结构 每个Pod中都可以包含一个或者多个容器，这些容器可以分为两类： 用户程序所在的容器，数量可多可少 Pause容器，这是每个Pod"><meta name=application-name content="黄波的博客"><meta name=apple-mobile-web-app-title content="黄波的博客"><meta name=theme-color media="(prefers-color-scheme: light)" content="#ffffff"><meta name=theme-color media="(prefers-color-scheme: dark)" content="#252627"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://dilless.github.io/posts/notes/devops/k8s/itheima/3-k8s-pod-advanced/><link rel=prev href=https://dilless.github.io/posts/notes/devops/k8s/itheima/2-k8s-getting-start/><link rel=stylesheet href=/lib/normalize/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><meta name=google-site-verification content="3_Zf27e0mNtTIsBWn36hi_d4KTxPd2Zh1dsZMVnKK8k"><meta name=baidu-site-verification content="code-VsfDko5mls"><meta name=360-site-verification content="1a8490494ad7f3fe3e0f7e4a61ce0775"><meta name=sogou_site_verification content="OTqUhL8vdL"><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"K8s 学习笔记（三）Pod 详解","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/dilless.github.io\/posts\/notes\/devops\/k8s\/itheima\/3-k8s-pod-advanced\/"},"genre":"posts","keywords":"K8s, Kubernetes, pod","wordcount":8750,"url":"https:\/\/dilless.github.io\/posts\/notes\/devops\/k8s\/itheima\/3-k8s-pod-advanced\/","datePublished":"2022-08-20T00:00:00+08:00","dateModified":"2022-08-20T19:41:00+08:00","publisher":{"@type":"Organization","name":""},"author":{"@type":"Person","name":"黄波"},"description":""}</script></head><body header-desktop=sticky header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper github-corner=right><div class=header-title><a href=/ title=黄波的博客><img class="lazyload logo" src=/svg/loading.min.svg data-src=/apple-touch-icon.png data-srcset="/apple-touch-icon.png, /apple-touch-icon.png 1.5x, /apple-touch-icon.png 2x" data-sizes=auto alt=黄波的博客 title=黄波的博客><span class=header-title-text>黄波的博客</span></a><span class=header-subtitle>开发、学习、生活、技术分享</span></div><nav><ul class=menu><li class=menu-item><a class=menu-link href=/posts/><i class='fa-solid fa-archive fa-fw fa-sm'></i> 文章</a></li><li class=menu-item><a class=menu-link href=/categories/><i class='fa-solid fa-th fa-fw fa-sm'></i> 分类</a></li><li class=menu-item><a class=menu-link href=/tags/><i class='fa-solid fa-tags fa-fw fa-sm'></i> 标签</a></li><li class=menu-item><a class=menu-link href=/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/><i class='fa-solid fa-book fa-fw fa-sm'></i> 学习笔记</a></li><li class=menu-item><a class=menu-link href=/about/><i class='fa-solid fa-info-circle fa-fw fa-sm'></i> 关于</a></li><li class="menu-item delimiter"></li><li class="menu-item language"><span title=选择语言>简体中文<i class="dropdown-icon fa-solid fa-chevron-down"></i></span><ul class=sub-menu><li class=menu-item>没有更多翻译</li></ul></li><li class="menu-item search" id=search-desktop><input type=text placeholder="搜索文章标题或内容 ..." id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fa-solid fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fa-solid fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fa-solid fa-spinner fa-fw fa-spin"></i></span></li><li class="menu-item theme-switch" title=切换主题><i class="fa-solid fa-adjust fa-fw"></i></li></ul></nav></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=黄波的博客><img class="lazyload logo" src=/svg/loading.min.svg data-src=/apple-touch-icon.png data-srcset="/apple-touch-icon.png, /apple-touch-icon.png 1.5x, /apple-touch-icon.png 2x" data-sizes=auto alt=/apple-touch-icon.png title=/apple-touch-icon.png><span class=header-title-text>黄波的博客</span></a><span class=header-subtitle>开发、学习、生活、技术分享</span></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><nav><ul class=menu id=menu-mobile><li class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder="搜索文章标题或内容 ..." id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fa-solid fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fa-solid fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fa-solid fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></li><li class=menu-item><a class=menu-link href=/posts/><i class='fa-solid fa-archive fa-fw fa-sm'></i> 文章</a></li><li class=menu-item><a class=menu-link href=/categories/><i class='fa-solid fa-th fa-fw fa-sm'></i> 分类</a></li><li class=menu-item><a class=menu-link href=/tags/><i class='fa-solid fa-tags fa-fw fa-sm'></i> 标签</a></li><li class=menu-item><a class=menu-link href=/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/><i class='fa-solid fa-book fa-fw fa-sm'></i> 学习笔记</a></li><li class=menu-item><a class=menu-link href=/about/><i class='fa-solid fa-info-circle fa-fw fa-sm'></i> 关于</a></li><li class="menu-item theme-switch" title=切换主题><i class="fa-solid fa-adjust fa-fw"></i></li><li class="menu-item language"><span title=选择语言>简体中文<i class="dropdown-icon fa-solid fa-chevron-down"></i></span>
+<select class=language-select onchange="location=this.value"><option disabled>没有更多翻译</option></select></li></ul></nav></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=container page-style=normal><aside class=toc id=toc-auto><h2 class=toc-title>目录 <i class="toc-icon fa-solid fa-angle-down fa-fw"></i></h2><div class=toc-content id=toc-content-auto></div></aside><aside class=aside-custom></aside><article class="page single"><div class=header><h1 class="single-title animate__animated animate__flipInX"><span>K8s 学习笔记（三）Pod 详解</span></h1></div><div class=post-meta><div class=post-meta-line><span class=post-author><a href=https://dilless.github.io title=作者 target=_blank rel="external nofollow noopener noreferrer author" class=author><i class="fa-solid fa-user-circle"></i>
+黄波</a></span>
+<span class=post-category>收录于 <a href=/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/><i class="fa-regular fa-folder fa-fw"></i>&nbsp;学习笔记</a>&ensp;<a href=/categories/k8s/><i class="fa-regular fa-folder fa-fw"></i>&nbsp;K8s</a></span></div><div class=post-meta-line><span title="2022-08-20 00:00:00"><i class="fa-regular fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2022-08-20>2022-08-20</time>
+</span>&nbsp;<i class="fa-solid fa-pencil-alt fa-fw"></i>&nbsp;约 8750 字&nbsp;
+<i class="fa-regular fa-clock fa-fw"></i>&nbsp;预计阅读 18 分钟&nbsp;<span id=busuanzi_container_page_pv class="busuanzi_visitors comment-visitors" data-flag-title="K8s 学习笔记（三）Pod 详解">
+<i class="fa-regular fa-eye fa-fw"></i>&nbsp;<span id=busuanzi_value_page_pv>-</span>&nbsp;次阅读
+</span>&nbsp;</div></div><div class="details toc" id=toc-static kept=false><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fa-solid fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#1-pod-介绍>1. Pod 介绍</a><ul><li><a href=#11-pod-结构>1.1 Pod 结构</a></li><li><a href=#12-pod-定义>1.2 Pod 定义</a></li></ul></li><li><a href=#2-pod-配置>2. Pod 配置</a><ul><li><a href=#21-基本配置>2.1 基本配置</a></li><li><a href=#22-镜像拉取imagepullpolicy>2.2 镜像拉取(imagePullPolicy)</a></li><li><a href=#23-启动命令command-和-args>2.3 启动命令(command 和 args)</a></li><li><a href=#24-环境变量env>2.4 环境变量(env)</a></li><li><a href=#25-端口设置>2.5 端口设置</a></li><li><a href=#26-资源配额>2.6 资源配额</a></li></ul></li><li><a href=#3-pod-生命周期>3. Pod 生命周期</a><ul><li><a href=#31-创建和终止>3.1 创建和终止</a></li><li><a href=#32-运行初始化容器>3.2 运行初始化容器</a></li><li><a href=#33-钩子函数>3.3 钩子函数</a></li><li><a href=#34-容器探测>3.4 容器探测</a></li><li><a href=#35-重启策略>3.5 重启策略</a></li></ul></li><li><a href=#4-pod-调度>4. Pod 调度</a><ul><li><a href=#41-定向调度>4.1 定向调度</a><ul><li><a href=#411-nodename>4.1.1 NodeName</a></li><li><a href=#412-nodeselector>4.1.2 NodeSelector</a></li></ul></li><li><a href=#42-亲和性调度>4.2 亲和性调度</a><ul><li><a href=#421-nodeaffinity>4.2.1 NodeAffinity</a></li><li><a href=#421-podaffinity>4.2.1 PodAffinity</a></li><li><a href=#421-podantiaffinity>4.2.1 PodAntiAffinity</a></li></ul></li><li><a href=#43-污点和容忍>4.3 污点和容忍</a><ul><li><a href=#431-污点>4.3.1 污点</a></li><li><a href=#432-容忍>4.3.2 容忍</a></li></ul></li></ul></li></ul></nav></div></div><div class=content id=content><h2 id=1-pod-介绍>1. Pod 介绍</h2><h3 id=11-pod-结构>1.1 Pod 结构</h3><p><img class=lazyload src=/svg/loading.min.svg data-src=images/image-20200407121501907.png data-srcset="/posts/notes/devops/k8s/itheima/3-k8s-pod-advanced/images/image-20200407121501907.png, images/image-20200407121501907.png 1.5x, /posts/notes/devops/k8s/itheima/3-k8s-pod-advanced/images/image-20200407121501907.png 2x" data-sizes=auto alt=/posts/notes/devops/k8s/itheima/3-k8s-pod-advanced/images/image-20200407121501907.png title="Pod 结构"></p><p>每个Pod中都可以包含一个或者多个容器，这些容器可以分为两类：</p><ul><li><p>用户程序所在的容器，数量可多可少</p></li><li><p>Pause容器，这是每个Pod都会有的一个<strong>根容器</strong>，它的作用有两个：</p><ul><li>可以以它为依据，评估整个Pod的健康状态</li><li>可以在根容器上设置Ip地址，其它容器都此Ip（Pod IP），以实现Pod<strong>内部</strong>的网路通信。<em>这里是Pod内部的通讯，Pod的之间的通讯采用虚拟二层网络技术来实现，我们当前环境用的是Flannel</em></li></ul></li></ul><h3 id=12-pod-定义>1.2 Pod 定义</h3><p><strong>可通过<code>kubectl explain</code>命令来查看每种资源的可配置项</strong></p><ul><li><code>kubectl explain 资源类型</code>：查看某种资源可以配置的一级属性</li><li><code>kubectl explain 资源类型.属性[.属性...]</code>：查看属性的子属性</li></ul><p>Pod 资源清单(YAML 配置):</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span><span class=lnt>77
+</span><span class=lnt>78
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1    </span><span class=w> </span><span class=c>#必选，版本号，例如v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Pod       　</span><span class=w> </span><span class=c>#必选，资源类型，例如 Pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w> </span><span class=c>#必选，元数据</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>string    </span><span class=w> </span><span class=c>#必选，Pod名称</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>string </span><span class=w> </span><span class=c>#Pod所属的命名空间,默认为&#34;default&#34;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>labels</span><span class=p>:</span><span class=w> 　　  </span><span class=c>#自定义标签列表</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>string      　</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w> </span><span class=c>#必选，Pod中容器的详细定义</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>containers</span><span class=p>:</span><span class=w> </span><span class=c>#必选，Pod中容器列表</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>string  </span><span class=w> </span><span class=c>#必选，容器名称</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>string </span><span class=w> </span><span class=c>#必选，容器的镜像名称</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>imagePullPolicy</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=w> </span><span class=l>Always|Never|IfNotPresent ] </span><span class=w> </span><span class=c>#获取镜像的策略 </span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=w> </span><span class=l>string ]  </span><span class=w> </span><span class=c>#容器的启动命令列表，如不指定，使用打包时使用的启动命令</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>args</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=w> </span><span class=l>string ]     </span><span class=w> </span><span class=c>#容器的启动命令参数列表</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>workingDir</span><span class=p>:</span><span class=w> </span><span class=l>string </span><span class=w> </span><span class=c>#容器的工作目录</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>volumeMounts</span><span class=p>:</span><span class=w> </span><span class=c>#挂载到容器内部的存储卷配置</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>string     </span><span class=w> </span><span class=c>#引用pod定义的共享存储卷的名称，需用volumes[]部分定义的的卷名</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>mountPath</span><span class=p>:</span><span class=w> </span><span class=l>string</span><span class=w> </span><span class=c>#存储卷在容器内mount的绝对路径，应少于512字符</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>readOnly</span><span class=p>:</span><span class=w> </span><span class=l>boolean</span><span class=w> </span><span class=c>#是否为只读模式</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>ports</span><span class=p>:</span><span class=w> </span><span class=c>#需要暴露的端口库号列表</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>string       </span><span class=w> </span><span class=c>#端口的名称</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>containerPort</span><span class=p>:</span><span class=w> </span><span class=l>int </span><span class=w> </span><span class=c>#容器需要监听的端口号</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>hostPort</span><span class=p>:</span><span class=w> </span><span class=l>int      </span><span class=w> </span><span class=c>#容器所在主机需要监听的端口号，默认与Container相同</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>protocol</span><span class=p>:</span><span class=w> </span><span class=l>string   </span><span class=w> </span><span class=c>#端口协议，支持TCP和UDP，默认TCP</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>env</span><span class=p>:</span><span class=w> </span><span class=c>#容器运行前需设置的环境变量列表</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>string </span><span class=w> </span><span class=c>#环境变量名称</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>value</span><span class=p>:</span><span class=w> </span><span class=l>string</span><span class=w> </span><span class=c>#环境变量的值</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>resources</span><span class=p>:</span><span class=w> </span><span class=c>#资源限制和请求的设置</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>limits</span><span class=p>:</span><span class=w> </span><span class=c>#资源限制的设置</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>cpu</span><span class=p>:</span><span class=w> </span><span class=l>string    </span><span class=w> </span><span class=c>#Cpu的限制，单位为core数，将用于docker run --cpu-shares参数</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>memory</span><span class=p>:</span><span class=w> </span><span class=l>string </span><span class=w> </span><span class=c>#内存限制，单位可以为Mib/Gib，将用于docker run --memory参数</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>requests</span><span class=p>:</span><span class=w> </span><span class=c>#资源请求的设置</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>cpu</span><span class=p>:</span><span class=w> </span><span class=l>string   </span><span class=w> </span><span class=c>#Cpu请求，容器启动的初始可用数量</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>memory</span><span class=p>:</span><span class=w> </span><span class=l>string</span><span class=w> </span><span class=c>#内存请求,容器启动的初始可用数量</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>lifecycle</span><span class=p>:</span><span class=w> </span><span class=c>#生命周期钩子</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>postStart</span><span class=p>:</span><span class=w> </span><span class=c>#容器启动后立即执行此钩子,如果执行失败,会根据重启策略进行重启</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>preStop</span><span class=p>:</span><span class=w> </span><span class=c>#容器终止前执行此钩子,无论结果如何,容器都会终止</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>livenessProbe</span><span class=p>:</span><span class=w> </span><span class=c>#对Pod内各容器健康检查的设置，当探测无响应几次后将自动重启该容器</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>exec</span><span class=p>:</span><span class=w> </span><span class=c>#对Pod容器内检查方式设置为exec方式</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=w> </span><span class=l>string ] </span><span class=w> </span><span class=c>#exec方式需要制定的命令或脚本</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>httpGet</span><span class=p>:</span><span class=w> </span><span class=c>#对Pod内个容器健康检查方法设置为HttpGet，需要制定Path、port</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>path</span><span class=p>:</span><span class=w> </span><span class=l>string</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>port</span><span class=p>:</span><span class=w> </span><span class=l>number</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>host</span><span class=p>:</span><span class=w> </span><span class=l>string</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>scheme</span><span class=p>:</span><span class=w> </span><span class=l>string</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>HttpHeaders</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>string</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=nt>value</span><span class=p>:</span><span class=w> </span><span class=l>string</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>tcpSocket</span><span class=p>:</span><span class=w> </span><span class=c>#对Pod内个容器健康检查方式设置为tcpSocket方式</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>port</span><span class=p>:</span><span class=w> </span><span class=l>number</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>initialDelaySeconds</span><span class=p>:</span><span class=w> </span><span class=m>0</span><span class=w>       </span><span class=c>#容器启动完成后首次探测的时间，单位为秒</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>timeoutSeconds</span><span class=p>:</span><span class=w> </span><span class=m>0</span><span class=w>    　　    </span><span class=c>#对容器健康检查探测等待响应的超时时间，单位秒，默认1秒</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>periodSeconds</span><span class=p>:</span><span class=w> </span><span class=m>0</span><span class=w>     　　    </span><span class=c>#对容器监控检查的定期探测时间设置，单位秒，默认10秒一次</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>successThreshold</span><span class=p>:</span><span class=w> </span><span class=m>0</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>failureThreshold</span><span class=p>:</span><span class=w> </span><span class=m>0</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>securityContext</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>privileged</span><span class=p>:</span><span class=w> </span><span class=kc>false</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>restartPolicy</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=w> </span><span class=l>Always | Never | OnFailure ] </span><span class=w> </span><span class=c>#Pod的重启策略</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>nodeName</span><span class=p>:</span><span class=w> </span><span class=l>&lt;string&gt;</span><span class=w> </span><span class=c>#设置NodeName表示将该Pod调度到指定到名称的node节点上</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>nodeSelector</span><span class=p>:</span><span class=w> </span><span class=l>obeject</span><span class=w> </span><span class=c>#设置NodeSelector表示将该Pod调度到包含这个label的node上</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>imagePullSecrets</span><span class=p>:</span><span class=w> </span><span class=c>#Pull镜像时使用的secret名称，以key：secretkey格式指定</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>string</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>hostNetwork</span><span class=p>:</span><span class=w> </span><span class=kc>false</span><span class=w>   </span><span class=c>#是否使用主机网络模式，默认为false，如果设置为true，表示使用宿主机网络</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>volumes</span><span class=p>:</span><span class=w> </span><span class=c>#在该pod上定义共享存储卷列表</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>string   </span><span class=w> </span><span class=c>#共享存储卷名称 （volumes类型有很多种）</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>emptyDir</span><span class=p>:</span><span class=w> </span>{<span class=w> </span>}<span class=w>       </span><span class=c>#类型为emtyDir的存储卷，与Pod同生命周期的一个临时目录。为空值</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>hostPath</span><span class=p>:</span><span class=w> </span><span class=c>#类型为hostPath的存储卷，表示挂载Pod所在宿主机的目录</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>path</span><span class=p>:</span><span class=w> </span><span class=l>string      　　       </span><span class=w> </span><span class=c>#Pod所在宿主机的目录，将被用于同期中mount的目录</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>secret</span><span class=p>:</span><span class=w> </span><span class=c>#类型为secret的存储卷，挂载集群与定义的secret对象到容器内部</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>secretName</span><span class=p>:</span><span class=w> </span><span class=l>string</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>items</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span>- <span class=nt>key</span><span class=p>:</span><span class=w> </span><span class=l>string</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=nt>path</span><span class=p>:</span><span class=w> </span><span class=l>string</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>configMap</span><span class=p>:</span><span class=w> </span><span class=c>#类型为configMap的存储卷，挂载预定义的configMap对象到容器内部</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>string</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>items</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span>- <span class=nt>key</span><span class=p>:</span><span class=w> </span><span class=l>string</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=nt>path</span><span class=p>:</span><span class=w> </span><span class=l>string</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>在kubernetes中基本所有资源的一级属性都是一样的，主要包含5部分：</p><ul><li><code>apiVersion &lt;string></code>：版本，由kubernetes内部定义，版本号必须可以用 <code>kubectl api-versions</code> 查询到</li><li><code>kind &lt;string></code>：类型，由kubernetes内部定义，版本号必须可以用 <code>kubectl api-resources</code> 查询到</li><li><code>metadata &lt;Object></code>：元数据，主要是资源标识和说明，常用的有name、namespace、labels等</li><li><code>spec &lt;Object></code>：描述，这是配置中<strong>最重要</strong>的一部分，里面是对各种资源配置的详细描述</li><li><code>status &lt;Object></code>：状态信息，里面的内容不需要定义，由kubernetes自动生成</li></ul><p>在上面的属性中，spec是接下来研究的重点，继续看下它的常见子属性:</p><ul><li><code>containers &lt;[]Object></code>：容器列表，用于定义容器的详细信息</li><li><code>nodeName &lt;String></code>：根据nodeName的值将pod调度到指定的Node节点上</li><li><code>nodeSelector &lt;map[</code>]>：根据NodeSelector中定义的信息选择将该Pod调度到包含这些label的Node 上</li><li><code>hostNetwork &lt;boolean></code>：是否使用主机网络模式，默认为false，如果设置为true，表示使用宿主机网络</li><li><code>volumes &lt;[]Object></code>：存储卷，用于定义Pod上面挂在的存储信息</li><li><code>restartPolicy &lt;string></code>：重启策略，表示Pod在遇到故障的时候的处理策略</li></ul><h2 id=2-pod-配置>2. Pod 配置</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=o>[</span>root@master ~<span class=o>]</span><span class=c1># kubectl explain pod.spec.containers</span>
+</span></span><span class=line><span class=cl>KIND:     Pod
+</span></span><span class=line><span class=cl>VERSION:  v1
+</span></span><span class=line><span class=cl>RESOURCE: containers &lt;<span class=o>[]</span>Object&gt;   <span class=c1># 数组，代表可以有多个容器</span>
+</span></span><span class=line><span class=cl>FIELDS:
+</span></span><span class=line><span class=cl>   name  &lt;string&gt;     <span class=c1># 容器名称</span>
+</span></span><span class=line><span class=cl>   image &lt;string&gt;     <span class=c1># 容器需要的镜像地址</span>
+</span></span><span class=line><span class=cl>   imagePullPolicy  &lt;string&gt; <span class=c1># 镜像拉取策略 </span>
+</span></span><span class=line><span class=cl>   <span class=nb>command</span>  &lt;<span class=o>[]</span>string&gt; <span class=c1># 容器的启动命令列表，如不指定，使用打包时使用的启动命令</span>
+</span></span><span class=line><span class=cl>   args     &lt;<span class=o>[]</span>string&gt; <span class=c1># 容器的启动命令需要的参数列表</span>
+</span></span><span class=line><span class=cl>   env      &lt;<span class=o>[]</span>Object&gt; <span class=c1># 容器环境变量的配置</span>
+</span></span><span class=line><span class=cl>   ports    &lt;<span class=o>[]</span>Object&gt;     <span class=c1># 容器需要暴露的端口号列表</span>
+</span></span><span class=line><span class=cl>   resources &lt;Object&gt;      <span class=c1># 资源限制和资源请求的设置</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=21-基本配置>2.1 基本配置</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>pod-base</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>dev</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>user</span><span class=p>:</span><span class=w> </span><span class=l>heima</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>busybox</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>busybox</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=22-镜像拉取imagepullpolicy>2.2 镜像拉取(imagePullPolicy)</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>pod-base</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>dev</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>user</span><span class=p>:</span><span class=w> </span><span class=l>heima</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>imagePullPolicy</span><span class=p>:</span><span class=w> </span><span class=l>Always </span><span class=w> </span><span class=c># 镜像拉取策略</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>busybox</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>busybox</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p><strong>imagePullPolicy 三种拉取策略</strong>：</p><ul><li>Always：总是从远程仓库拉取镜像（一直远程下载），tag 为 <code>latest</code> 时<strong>默认</strong></li><li>IfNotPresent：本地有则使用本地镜像，本地没有则从远程仓库拉取镜像（本地有就本地 本地没远程下载），tag 为具体版本时<strong>默认</strong>。</li><li>Never：只使用本地镜像，从不去远程仓库拉取，本地没有就报错 （一直使用本地）</li></ul><h3 id=23-启动命令command-和-args>2.3 启动命令(command 和 args)</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>pod-command</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>dev</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>busybox</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>busybox</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=c># command 指定容器运行后执行的命令</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=s2>&#34;/bin/sh&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;-c&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;touch /tmp/hello.txt;while true;do /bin/echo $(date +%T) &gt;&gt; /tmp/hello.txt; sleep 3; done;&#34;</span><span class=p>]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=c># args 指定参数</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>args</span><span class=p>:</span><span class=w> </span><span class=p>[]</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><ul><li>command 和 args 对应 Dockerfile 中的 ENTRYPOINT</li><li>指定 command 会覆盖 ENTRYPOINT；指定 args 会执行 ENTRYPOINT 并带上 args 参数</li></ul><p><strong>进入容器</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cubectl <span class=nb>exec</span> &lt;pod-name&gt; <span class=o>[</span>-n &lt;namespace&gt;<span class=o>]</span> -it -c &lt;contaienr name&gt; &lt;command&gt;
+</span></span></code></pre></td></tr></table></div></div><h3 id=24-环境变量env>2.4 环境变量(env)</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>pod-env</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>dev</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>busybox</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>busybox</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=s2>&#34;/bin/sh&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;-c&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;while true;do /bin/echo $(date +%T); sleep 60; done;&#34;</span><span class=p>]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>env</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;username&#34;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>value</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;admin&#34;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;password&#34;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>value</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;123456&#34;</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>这种方式不是很推荐，推荐将这些配置单独存储在<strong>配置文件</strong>中。</p><h3 id=25-端口设置>2.5 端口设置</h3><p>支持的选项：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=o>[</span>root@master ~<span class=o>]</span><span class=c1># kubectl explain pod.spec.containers.ports</span>
+</span></span><span class=line><span class=cl>KIND:     Pod
+</span></span><span class=line><span class=cl>VERSION:  v1
+</span></span><span class=line><span class=cl>RESOURCE: ports &lt;<span class=o>[]</span>Object&gt;
+</span></span><span class=line><span class=cl>FIELDS:
+</span></span><span class=line><span class=cl>   name         &lt;string&gt;  <span class=c1># 端口名称，如果指定，必须保证name在pod中是唯一的		</span>
+</span></span><span class=line><span class=cl>   containerPort&lt;integer&gt; <span class=c1># 容器要监听的端口(0&lt;x&lt;65536)</span>
+</span></span><span class=line><span class=cl>   hostPort     &lt;integer&gt; <span class=c1># 容器要在主机上公开的端口，如果设置，主机上只能运行容器的一个副本(一般省略) </span>
+</span></span><span class=line><span class=cl>   hostIP       &lt;string&gt;  <span class=c1># 要将外部端口绑定到的主机IP(一般省略)</span>
+</span></span><span class=line><span class=cl>   protocol     &lt;string&gt;  <span class=c1># 端口协议。必须是UDP、TCP或SCTP。默认为“TCP”。</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>pod-ports</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>dev</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>ports</span><span class=p>:</span><span class=w>  </span><span class=c># 暴露的端口列表</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx-port</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>containerPort</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>  </span><span class=c># 端口号</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>访问容器中的程序使用<code>podIp:containerPort</code></p><h3 id=26-资源配额>2.6 资源配额</h3><p>如果不对某个容器的资源做限制，那么它就可能吃掉大量资源，导致其它容器无法运行。</p><p>通过resources选项实现，他有两个子选项：</p><ul><li>limits：<strong>上限</strong>，用于限制运行时容器的最大占用资源，当容器占用资源超过limits时会被终止，并进行重启</li><li>requests ：<strong>下限</strong>，用于设置容器需要的最小资源，如果环境资源不够，容器将无法启动</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>pod-resources</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>dev</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>resources</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>limits</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>cpu</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;2&#34;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>memory</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;10Gi&#34;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>requests</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>cpu</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;1&#34;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>memory</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;10Mi&#34;</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><blockquote><p>1Gi = 1.024 * 1G</p></blockquote><h2 id=3-pod-生命周期>3. Pod 生命周期</h2><p><strong>Pod 生命周期</strong>：</p><p><img class=lazyload src=/svg/loading.min.svg data-src=images/image-20200412111402706.png data-srcset="/posts/notes/devops/k8s/itheima/3-k8s-pod-advanced/images/image-20200412111402706.png, images/image-20200412111402706.png 1.5x, /posts/notes/devops/k8s/itheima/3-k8s-pod-advanced/images/image-20200412111402706.png 2x" data-sizes=auto alt=/posts/notes/devops/k8s/itheima/3-k8s-pod-advanced/images/image-20200412111402706.png title="Pod 生命周期"></p><ul><li>pod创建过程</li><li>运行初始化容器（init container）过程</li><li>运行主容器（main container）<ul><li>容器启动后钩子（post start）、容器终止前钩子（pre stop）</li><li>容器的存活性探测（liveness probe）、就绪性探测（readiness probe）</li></ul></li><li>pod终止过程</li></ul><p>在整个生命周期中，Pod会出现5种<strong>状态</strong>（<strong>相位</strong>），分别如下：</p><ul><li>挂起（Pending）：apiserver已经创建了pod资源对象，但它尚未被调度完成或者仍处于下载镜像的过程中</li><li>运行中（Running）：pod已经被调度至某节点，并且所有容器都已经被kubelet创建完成</li><li>成功（Succeeded）：pod中的所有容器都已经成功终止并且不会被重启</li><li>失败（Failed）：所有容器都已经终止，但至少有一个容器终止失败，即容器返回了非0值的退出状态</li><li>未知（Unknown）：apiserver无法正常获取到pod对象的状态信息，通常由网络通信失败所导致</li></ul><h3 id=31-创建和终止>3.1 创建和终止</h3><p><strong>pod的创建过程</strong></p><ol><li>用户通过kubectl或其他api客户端提交需要创建的pod信息给apiServer</li><li>apiServer开始生成pod对象的信息，并将信息存入etcd，然后返回确认信息至客户端</li><li>apiServer开始反映etcd中的pod对象的变化，其它组件使用<strong>watch机制</strong>来跟踪检查apiServer上的变动</li><li>scheduler发现有新的pod对象要创建，开始为Pod分配主机并将结果信息更新至apiServer</li><li>node节点上的kubelet发现有pod调度过来，尝试调用docker启动容器，并将结果回送至apiServer</li><li>apiServer将接收到的pod状态信息存入etcd中</li></ol><p><strong>pod的终止过程</strong></p><ol><li>用户向apiServer发送删除pod对象的命令</li><li>apiServcer中的pod对象信息会随着时间的推移而更新，在宽限期内（默认30s），pod被视为dead</li><li>将pod标记为terminating状态</li><li>kubelet在监控到pod对象转为terminating状态的同时启动pod关闭过程</li><li>端点控制器监控到pod对象的关闭行为时将其从所有匹配到此端点的service资源的端点列表中移除</li><li>如果当前pod对象定义了preStop钩子处理器，则在其标记为terminating后即会以同步的方式启动执行</li><li>pod对象中的容器进程收到停止信号</li><li>宽限期结束后，若pod中还存在仍在运行的进程，那么pod对象会收到立即终止的信号</li><li>kubelet请求apiServer将此pod资源的宽限期设置为0从而完成删除操作，此时pod对于用户已不可见</li></ol><h3 id=32-运行初始化容器>3.2 运行初始化容器</h3><p>初始化容器是在pod的主容器启动之前要运行的容器，主要是做一些主容器的前置工作，它具有两大特征：</p><ol><li>初始化容器必须运行完成直至结束，若某初始化容器运行失败，那么kubernetes需要重启它直到成功完成</li><li>初始化容器必须按照定义的顺序执行，当且仅当前一个成功之后，后面的一个才能运行</li></ol><p>初始化容器的应用场景：</p><ul><li>提供主容器镜像中不具备的工具程序或自定义代码</li><li>初始化容器要先于应用容器串行启动并运行完成，因此可用于延后应用容器的启动直至其<strong>依赖</strong>的条件得到满足</li></ul><p><strong>Pod 配置文件案例</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>pod-initcontainer</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>dev</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>main-container</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>containerPort</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>initContainers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>test-mysql</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>busybox</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=s2>&#34;sh&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;-c&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;until ping 192.168.31.201 -c 1; do echo waiting for mysql...; sleep 2; done;&#34;</span><span class=p>]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>test-redis</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>busybox</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=s2>&#34;sh&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;-c&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;until ping 192.168.31.202 -c 1; do echo waiting for mysql...; sleep 2; done;&#34;</span><span class=p>]</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=33-钩子函数>3.3 钩子函数</h3><p>kubernetes在主容器的启动之后和停止之前提供了两个钩子函数：</p><ul><li>post start：容器创建之后执行，如果失败了会重启容器</li><li>pre stop ：容器终止之前执行，执行完成之后容器将成功终止，在其完成之前会阻塞删除容器的操作</li></ul><p>钩子处理器支持使用下面三种方式定义动作：</p><ul><li>Exec命令：在容器内执行一次命令</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>lifecycle</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>postStart</span><span class=p>:</span><span class=w> 
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>exec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>command</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=l>cat</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=l>/tmp/healthy</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><ul><li>TCPSocket：在当前容器尝试访问指定的socket</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>lifecycle</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>postStart</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>tcpSocket</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>port</span><span class=p>:</span><span class=w> </span><span class=m>8080</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><ul><li>HTTPGet：在当前容器中向某url发起http请求</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>lifecycle</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>postStart</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>httpGet</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>path</span><span class=p>:</span><span class=w> </span><span class=l>/</span><span class=w> </span><span class=c>#URI地址</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>port</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w> </span><span class=c>#端口号</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>host</span><span class=p>:</span><span class=w> </span><span class=m>192.168.109.100</span><span class=w> </span><span class=c>#主机地址</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>scheme</span><span class=p>:</span><span class=w> </span><span class=l>HTTP</span><span class=w> </span><span class=c>#支持的协议，http或者https</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p><strong>Pod配置文件举例</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>pod-hook-exec</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>dev</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>main-container</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>containerPort</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>lifecycle</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>postStart</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>exec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=s2>&#34;/bin/sh&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;-c&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;echo postStart... &gt; /usr/share/nginx/html/index.html&#34;</span><span class=p>]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>preStop</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>exec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=s2>&#34;/usr/sbin/nginx&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;-s&#34;</span><span class=p>,</span><span class=w> </span><span class=s2>&#34;quit&#34;</span><span class=p>]</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=34-容器探测>3.4 容器探测</h3><p>容器探测用于检测容器中的应用实例是否正常工作，是保障业务可用性的一种传统机制。如果经过探测，实例的状态不符合预期，那么kubernetes就会把该问题实例" 摘除 &ldquo;，不承担业务流量。kubernetes提供了两种探针来实现容器探测，分别是：</p><ul><li>liveness probes：存活性探针，用于检测应用实例当前是否处于正常运行状态，如果不是，k8s会重启容器</li><li>readiness probes：就绪性探针，用于检测应用实例当前是否可以接收请求，如果不能，k8s不会转发流量</li></ul><blockquote><p>livenessProbe 决定是否重启容器，readinessProbe 决定是否将请求转发给容器。</p></blockquote><p>上面两种探针同样支持<a href=#33-%e9%92%a9%e5%ad%90%e5%87%bd%e6%95%b0>三种探测方式</a>：</p><ul><li>Exec 命令</li><li>TCPSocket</li><li>HTTPGet</li></ul><p><strong>Pod配置文件举例</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>pod-liveness-exec</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>dev</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>containerPort</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>livenessProbe</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>exec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>command</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span>- <span class=l>/bin/cat</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span>- <span class=l>/tmp/hello.txt</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>livenessProbe 还有其他配置：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=o>[</span>root@master ~<span class=o>]</span><span class=c1># kubectl explain pod.spec.containers.livenessProbe</span>
+</span></span><span class=line><span class=cl>  FIELDS:
+</span></span><span class=line><span class=cl>    <span class=nb>exec</span> &lt;Object&gt;
+</span></span><span class=line><span class=cl>    tcpSocket    &lt;Object&gt;
+</span></span><span class=line><span class=cl>    httpGet      &lt;Object&gt;
+</span></span><span class=line><span class=cl>    initialDelaySeconds  &lt;integer&gt;  <span class=c1># 容器启动后等待多少秒执行第一次探测</span>
+</span></span><span class=line><span class=cl>    timeoutSeconds       &lt;integer&gt;  <span class=c1># 探测超时时间。默认1秒，最小1秒</span>
+</span></span><span class=line><span class=cl>    periodSeconds        &lt;integer&gt;  <span class=c1># 执行探测的频率。默认是10秒，最小1秒</span>
+</span></span><span class=line><span class=cl>    failureThreshold     &lt;integer&gt;  <span class=c1># 连续探测失败多少次才被认定为失败。默认是3。最小值是1</span>
+</span></span><span class=line><span class=cl>    successThreshold     &lt;integer&gt;  <span class=c1># 连续探测成功多少次才被认定为成功。默认是1</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=35-重启策略>3.5 重启策略</h3><p>pod的重启策略有 3 种，分别如下：</p><ul><li>Always ：容器失效时，自动重启该容器，这也是默认值。</li><li>OnFailure ： 容器终止运行且退出码不为0时重启</li><li>Never ： 不论状态为何，都不重启该容器</li></ul><p>重启延迟：</p><ul><li>首次立即重启</li><li>接下来重启延迟为 10s、20s、40s、80s、160s和300s</li><li>最大延迟为 300s</li></ul><p><strong>Pod配置文件举例</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>pod-restartpolicy</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>dev</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>containerPort</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>livenessProbe</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>httpGet</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>port</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>path</span><span class=p>:</span><span class=w> </span><span class=l>/hello</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>scheme</span><span class=p>:</span><span class=w> </span><span class=l>HTTP</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>restartPolicy</span><span class=p>:</span><span class=w> </span><span class=l>Never </span><span class=w> </span><span class=c># 注意！是 pod 的属性，不是 containers 的</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h2 id=4-pod-调度>4. Pod 调度</h2><p>在默认情况下，一个Pod在哪个Node节点上运行，是由Scheduler组件采用相应的算法计算出来的，这个过程是不受人工控制的。</p><p>但是在实际使用中，这并不满足的需求，因为很多情况下，我们想控制某些Pod到达某些节点上，那么应该怎么做呢？这就要求了解kubernetes对Pod的调度规则，kubernetes提供了四大类调度方式：</p><ul><li>自动调度：运行在哪个节点上完全由Scheduler经过一系列的算法计算得出</li><li>定向调度：NodeName、NodeSelector</li><li>亲和性调度：NodeAffinity、PodAffinity、PodAntiAffinity</li><li>污点（容忍）调度：Taints、Toleration</li></ul><h3 id=41-定向调度>4.1 定向调度</h3><p>利用在pod上声明nodeName或者nodeSelector，以此将Pod调度到期望的node节点上。</p><p><strong>注意</strong>，这里的调度是<strong>强制的</strong>，这就意味着即使要调度的目标Node不存在，也会向上面进行调度，只不过pod运行<strong>失败</strong>而已。</p><h4 id=411-nodename>4.1.1 NodeName</h4><p>NodeName用于<strong>强制约束</strong>将Pod调度到指定的Name的Node节点上。这种方式，其实是直接跳过Scheduler的调度逻辑，直接将Pod调度到指定名称的节点。</p><p><strong>Pod配置文件举例</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>pod-nodename</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>dev</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>nodeName</span><span class=p>:</span><span class=w> </span><span class=l>u-2 </span><span class=w> </span><span class=c># 节点名称，通过 kubectl get nodes 查看</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h4 id=412-nodeselector>4.1.2 NodeSelector</h4><p>NodeSelector用于将pod调度到添加了指定标签的node节点上。也是<strong>强制约束</strong></p><p><strong>Pod配置文件举例</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>pod-nodeselector</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>dev</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>nodeSelector</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>nodeenv</span><span class=p>:</span><span class=w> </span><span class=l>pro </span><span class=w> </span><span class=c># 指定调度到具有 nodeenv=pro 标签的节点上</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=42-亲和性调度>4.2 亲和性调度</h3><p>定向调度有一定的<strong>问题</strong>，那就是如果没有满足条件的Node，那么Pod将不会被运行，即使在集群中还有可用Node列表也不行，这就限制了它的使用场景。</p><p>亲和性调度（Affinity）：它在NodeSelector的基础之上的进行了扩展，可以通过配置的形式，实现优先选择满足条件的Node进行调度，如果没有，也可以调度到不满足条件的节点上，使调度更加灵活。</p><p>Affinity主要分为三类：</p><ul><li>nodeAffinity(node亲和性）: 以node为目标，解决pod可以调度到哪些node的问题</li><li>podAffinity(pod亲和性) : 以pod为目标，解决pod可以和哪些已存在的pod部署在同一个拓扑域中的问题</li><li>podAntiAffinity(pod反亲和性) : 以pod为目标，解决pod不能和哪些已存在pod部署在同一个拓扑域中的问题</li></ul><blockquote><p>亲和性(反亲和性)使用场景的说明：</p><ul><li><strong>亲和性</strong>：如果两个应用<strong>频繁交互</strong>，那就有必要利用亲和性让两个应用的尽可能的靠近，这样可以减少因网络通信而带来的性能损耗。</li><li><strong>反亲和性</strong>：当应用的采用多副本部署时，有必要采用反亲和性让各个应用实例打散分布在各个node上，这样可以提高服务的<strong>高可用性</strong>。</li></ul></blockquote><h4 id=421-nodeaffinity>4.2.1 NodeAffinity</h4><p><strong>主要字段</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ kubectl explain pod.spec.affinity.nodeAffinity
+</span></span><span class=line><span class=cl>  requiredDuringSchedulingIgnoredDuringExecution  <span class=c1># Node节点必须满足指定的所有规则才可以，相当于硬限制</span>
+</span></span><span class=line><span class=cl>    nodeSelectorTerms  <span class=c1># 节点选择列表</span>
+</span></span><span class=line><span class=cl>      matchFields   <span class=c1># 按节点字段列出的节点选择器要求列表</span>
+</span></span><span class=line><span class=cl>      matchExpressions   <span class=c1>#按节点标签列出的节点选择器要求列表(推荐)</span>
+</span></span><span class=line><span class=cl>        key    <span class=c1># 键</span>
+</span></span><span class=line><span class=cl>        values <span class=c1># 值</span>
+</span></span><span class=line><span class=cl>        operator <span class=c1># 关系符 支持Exists, DoesNotExist, In, NotIn, Gt, Lt</span>
+</span></span><span class=line><span class=cl>  preferredDuringSchedulingIgnoredDuringExecution <span class=c1># 优先调度到满足指定的规则的Node，相当于软限制 (倾向)</span>
+</span></span><span class=line><span class=cl>    preference   <span class=c1># 一个节点选择器项，与相应的权重相关联</span>
+</span></span><span class=line><span class=cl>      matchFields   <span class=c1># 按节点字段列出的节点选择器要求列表</span>
+</span></span><span class=line><span class=cl>      matchExpressions   <span class=c1># 按节点标签列出的节点选择器要求列表(推荐)</span>
+</span></span><span class=line><span class=cl>        key    <span class=c1># 键</span>
+</span></span><span class=line><span class=cl>        values <span class=c1># 值</span>
+</span></span><span class=line><span class=cl>        operator <span class=c1># 关系符 支持In, NotIn, Exists, DoesNotExist, Gt, Lt</span>
+</span></span><span class=line><span class=cl>	weight <span class=c1># 倾向权重，在范围1-100。</span>
+</span></span></code></pre></td></tr></table></div></div><p><strong>Pod配置文件举例</strong></p><p>硬限制：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>pod-nodeaffinity-required</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>dev</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>affinity</span><span class=p>:</span><span class=w>  </span><span class=c># 亲和性设置</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>nodeAffinity</span><span class=p>:</span><span class=w>  </span><span class=c># 设置 node 亲和性</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>requiredDuringSchedulingIgnoredDuringExecution</span><span class=p>:</span><span class=w>  </span><span class=c># 硬限制</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>nodeSelectorTerms</span><span class=p>:</span><span class=w>  </span><span class=c># Selector 列表</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span>- <span class=nt>matchExpressions</span><span class=p>:</span><span class=w>  </span><span class=c># 匹配 nodeenv 值在 [&#39;xxx&#39;, &#39;yyy&#39;] 中的标签</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>              </span>- <span class=nt>key</span><span class=p>:</span><span class=w> </span><span class=l>nodeenv</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=nt>operator</span><span class=p>:</span><span class=w> </span><span class=l>In</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=nt>values</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                  </span>- <span class=l>xxx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                  </span>- <span class=l>yyy</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>软限制：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>pod-nodeaffinity-preferred</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>dev</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>affinity</span><span class=p>:</span><span class=w> </span><span class=c># 亲和性设置</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>nodeAffinity</span><span class=p>:</span><span class=w> </span><span class=c># 设置 node 亲和性</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>preferredDuringSchedulingIgnoredDuringExecution</span><span class=p>:</span><span class=w> </span><span class=c># 软限制</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>weight</span><span class=p>:</span><span class=w> </span><span class=m>1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>preference</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=nt>matchExpressions</span><span class=p>:</span><span class=w> </span><span class=c># 匹配 nodeenv 值在 [&#39;xxx&#39;, &#39;yyy&#39;] 中的标签</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>              </span>- <span class=nt>key</span><span class=p>:</span><span class=w> </span><span class=l>nodeenv</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=nt>operator</span><span class=p>:</span><span class=w> </span><span class=l>In</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=nt>values</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                  </span>- <span class=l>xxx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                  </span>- <span class=l>yyy</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h4 id=421-podaffinity>4.2.1 PodAffinity</h4><p>PodAffinity主要实现以运行的Pod为参照，实现让新创建的Pod跟参照pod在同一个区域的功能。</p><p>同样有硬限制和软限制</p><p><strong>配置项</strong>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ kubectl explain pod.spec.affinity.podAffinity
+</span></span><span class=line><span class=cl>  requiredDuringSchedulingIgnoredDuringExecution  <span class=c1># 硬限制</span>
+</span></span><span class=line><span class=cl>    namespaces      <span class=c1># 指定参照pod的namespace</span>
+</span></span><span class=line><span class=cl>    topologyKey     <span class=c1># 指定调度作用域</span>
+</span></span><span class=line><span class=cl>    labelSelector   <span class=c1># 标签选择器</span>
+</span></span><span class=line><span class=cl>      matchExpressions <span class=c1># 按节点标签列出的节点选择器要求列表(推荐)</span>
+</span></span><span class=line><span class=cl>        key   <span class=c1># 键</span>
+</span></span><span class=line><span class=cl>        values <span class=c1># 值</span>
+</span></span><span class=line><span class=cl>        operator <span class=c1># 关系符 支持In, NotIn, Exists, DoesNotExist.</span>
+</span></span><span class=line><span class=cl>      matchLabels   <span class=c1># 指多个matchExpressions映射的内容</span>
+</span></span><span class=line><span class=cl>  preferredDuringSchedulingIgnoredDuringExecution <span class=c1># 软限制</span>
+</span></span><span class=line><span class=cl>    podAffinityTerm <span class=c1># 选项</span>
+</span></span><span class=line><span class=cl>      namespaces      
+</span></span><span class=line><span class=cl>      topologyKey
+</span></span><span class=line><span class=cl>      labelSelector
+</span></span><span class=line><span class=cl>        matchExpressions  
+</span></span><span class=line><span class=cl>          key   <span class=c1># 键</span>
+</span></span><span class=line><span class=cl>          values <span class=c1># 值</span>
+</span></span><span class=line><span class=cl>          operator
+</span></span><span class=line><span class=cl>        matchLabels 
+</span></span><span class=line><span class=cl>    weight <span class=c1># 倾向权重，在范围1-100</span>
+</span></span></code></pre></td></tr></table></div></div><blockquote><p>topologyKey：指定调度作用域</p><ul><li>kubernetes.io/hostname，那就是以Node节点为区分范围</li><li>beta.kubernetes.io/os,则以Node节点的操作系统类型来区分</li></ul></blockquote><p><strong>Pod配置文件举例</strong></p><p>硬限制：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>pod-podaffinity-required</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>dev</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>affinity</span><span class=p>:</span><span class=w> </span><span class=c># 亲和性设置</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>podAffinity</span><span class=p>:</span><span class=w> </span><span class=c># 设置 pod 亲和性</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>requiredDuringSchedulingIgnoredDuringExecution</span><span class=p>:</span><span class=w> </span><span class=c># 硬限制</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>labelSelector</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=nt>matchExpressions</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>              </span>- <span class=nt>key</span><span class=p>:</span><span class=w> </span><span class=l>podenv</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=nt>operator</span><span class=p>:</span><span class=w> </span><span class=l>In</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=nt>values</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                  </span>- <span class=l>xxx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                  </span>- <span class=l>yyy</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>topologyKey</span><span class=p>:</span><span class=w> </span><span class=l>kubernetes.io/hostname</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h4 id=421-podantiaffinity>4.2.1 PodAntiAffinity</h4><p>PodAntiAffinity主要实现以运行的Pod为参照，让新创建的Pod跟参照pod不在一个区域中的功能。</p><p>它的配置方式和选项跟PodAffinity是一样的</p><h3 id=43-污点和容忍>4.3 污点和容忍</h3><h4 id=431-污点>4.3.1 污点</h4><p>我们也可以站在Node的角度上，通过在Node上添加<strong>污点</strong>属性，来决定是否允许Pod调度过来。</p><p>Node被设置上污点之后就和Pod之间存在了一种相斥的关系，进而拒绝Pod调度进来，甚至可以将已经存在的Pod驱逐出去。</p><p>污点的格式为：<code>key=value:effect</code>, key和value是污点的标签，effect描述污点的作用，支持如下三个选项：</p><ul><li>PreferNoSchedule：kubernetes将<strong>尽量</strong>避免把Pod调度到具有该污点的Node上，除非没有其他节点可调度</li><li>NoSchedule：kubernetes将不会把Pod调度到具有该污点的Node上，但<strong>不会影响</strong>当前Node上<strong>已存在的</strong>Pod</li><li>NoExecute：kubernetes将不会把Pod调度到具有该污点的Node上，同时也会将Node上已存在的Pod<strong>驱离</strong></li></ul><blockquote><ul><li>使用kubeadm搭建的集群，默认就会给master节点添加一个污点标记(node-role.kubernetes.io/master:NoSchedule),所以pod就不会调度到master节点上.</li><li>离线的 node 会添加两个污点： node.kubernetes.io/unreachable:NoExecute、node.kubernetes.io/unreachable:NoSchedule</li></ul></blockquote><p><strong>命令</strong>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 设置污点</span>
+</span></span><span class=line><span class=cl>kubectl taint nodes &lt;node-name&gt; &lt;<span class=nv>key</span><span class=o>=</span>value:effect&gt;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 去除污点</span>
+</span></span><span class=line><span class=cl>kubectl taint nodes &lt;node-name&gt; &lt;key:effect-&gt;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 去除所有污点</span>
+</span></span><span class=line><span class=cl>kubectl taint nodes &lt;node-name&gt; &lt;key-&gt;
+</span></span></code></pre></td></tr></table></div></div><h4 id=432-容忍>4.3.2 容忍</h4><blockquote><p>污点就是拒绝，容忍就是忽略，Node通过污点拒绝pod调度上去，Pod通过容忍忽略拒绝</p></blockquote><p><strong>Pod配置举例</strong></p><p>添加容忍：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>pod-toleration</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>dev</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>tolerations</span><span class=p>:</span><span class=w>  </span><span class=c># 添加容忍</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>key</span><span class=p>:</span><span class=w> </span><span class=l>tag </span><span class=w> </span><span class=c># 要容忍的污点的 key, 空意味着匹配所有的键</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>operator</span><span class=p>:</span><span class=w> </span><span class=l>Equal </span><span class=w> </span><span class=c># key 和 value 间操作符，支持 Equal 和 Exists（默认）</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>value</span><span class=p>:</span><span class=w> </span><span class=l>heima </span><span class=w> </span><span class=c># 容忍的污点的 value</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>effect</span><span class=p>:</span><span class=w> </span><span class=l>NoExecute </span><span class=w> </span><span class=c># 容忍的规则，必须和标记的污点的规则相同，空意味着匹配所有影响</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=c># tolerationSeconds   # 容忍时间, 当effect为NoExecute时生效，表示pod在Node上的停留时间</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span title="2022-08-20 19:41:00">更新于 2022-08-20</span></div><div class=post-info-license><span><a rel="license external nofollow noopener noreferrer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div><div class=post-info-line><div class=post-info-md><span><a href=/posts/notes/devops/k8s/itheima/3-k8s-pod-advanced/index.md title=阅读原始文档 class=link-to-markdown>阅读原始文档</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://dilless.github.io/posts/notes/devops/k8s/itheima/3-k8s-pod-advanced/ data-title="K8s 学习笔记（三）Pod 详解" data-hashtags=K8s,Kubernetes,pod><i class="fa-brands fa-twitter fa-fw"></i></a>
+<a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://dilless.github.io/posts/notes/devops/k8s/itheima/3-k8s-pod-advanced/ data-hashtag=K8s><i class="fa-brands fa-facebook-square fa-fw"></i></a>
+<a href=javascript:void(0); title="分享到 WhatsApp" data-sharer=whatsapp data-url=https://dilless.github.io/posts/notes/devops/k8s/itheima/3-k8s-pod-advanced/ data-title="K8s 学习笔记（三）Pod 详解" data-web><i class="fa-brands fa-whatsapp fa-fw"></i></a>
+<a href=javascript:void(0); title="分享到 Line" data-sharer=line data-url=https://dilless.github.io/posts/notes/devops/k8s/itheima/3-k8s-pod-advanced/ data-title="K8s 学习笔记（三）Pod 详解"><i data-svg-src=/lib/simple-icons/icons/line.min.svg></i></a>
+<a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://dilless.github.io/posts/notes/devops/k8s/itheima/3-k8s-pod-advanced/ data-title="K8s 学习笔记（三）Pod 详解"><i class="fa-brands fa-weibo fa-fw"></i></a>
+<a href=javascript:void(0); title="分享到 Myspace" data-sharer=myspace data-url=https://dilless.github.io/posts/notes/devops/k8s/itheima/3-k8s-pod-advanced/ data-title="K8s 学习笔记（三）Pod 详解" data-description><i data-svg-src=/lib/simple-icons/icons/myspace.min.svg></i></a>
+<a href=javascript:void(0); title="分享到 Blogger" data-sharer=blogger data-url=https://dilless.github.io/posts/notes/devops/k8s/itheima/3-k8s-pod-advanced/ data-title="K8s 学习笔记（三）Pod 详解" data-description><i class="fa-brands fa-blogger fa-fw"></i></a>
+<a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://dilless.github.io/posts/notes/devops/k8s/itheima/3-k8s-pod-advanced/ data-title="K8s 学习笔记（三）Pod 详解"><i class="fa-brands fa-evernote fa-fw"></i></a></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fa-solid fa-tags fa-fw"></i>&nbsp;<a href=/tags/k8s/>K8s</a>,&nbsp;<a href=/tags/kubernetes/>Kubernetes</a>,&nbsp;<a href=/tags/pod/>pod</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/posts/notes/devops/k8s/itheima/2-k8s-getting-start/ class=prev rel=prev title="K8s 学习笔记（二）入门"><i class="fa-solid fa-angle-left fa-fw"></i>K8s 学习笔记（二）入门</a></div></div><div id=comments><div id=giscus><script src=https://giscus.app/client.js data-repo=dilless/dilless.github.io data-repo-id=R_kgDOHr9Jag data-category=Announcements data-category-id=DIC_kwDOHr9Jas4CQ396 data-mapping=title data-theme=preferred_color_scheme data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-lang=zh-CN data-loading=lazy crossorigin=anonymous async defer></script><noscript>Please enable JavaScript to view the comments powered by <a href=https://giscus.app/ rel="external nofollow noopener noreferrer">giscus</a>.</noscript></div></div></article></main><footer class=footer><div class=footer-container><div class="footer-line powered">由 <a href=https://gohugo.io/ target=_blank rel="external nofollow noopener noreferrer" title="Hugo 0.101.0">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/hugo-fixit/FixIt target=_blank rel="external nofollow noopener noreferrer" title="FixIt v0.2.16-RC"><img class=fixit-icon src=/images/fixit.svg alt="FixIt logo">&nbsp;FixIt</a></div><div class="footer-line copyright"><i class="fa-regular fa-copyright fa-fw"></i>
+<span itemprop=copyrightYear>2022</span><span class=author itemprop=copyrightHolder>
+<a href=https://dilless.github.io target=_blank rel="external nofollow noopener noreferrer">黄波</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line ibruce"><span id=busuanzi_container_site_uv title=总访客数><i class="fa-regular fa-user fa-fw"></i>&nbsp;<span id=busuanzi_value_site_uv><i class="fa fa-spinner fa-spin fa-fw"></i></span></span><span id=busuanzi_container_site_pv class=footer-divider title=总访问量><i class="fa-regular fa-eye fa-fw"></i>&nbsp;<span id=busuanzi_value_site_pv><i class="fa fa-spinner fa-spin fa-fw"></i></span></span></div></div></footer></div><div class=widgets><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fa-solid fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fa-solid fa-comment fa-fw"></i></a></div><a href=https://github.com/dilless title="在 GitHub 上找到我" target=_blank rel="external nofollow noopener noreferrer" class="github-corner right d-none-mobile"><svg viewBox="0 0 250 250" aria-hidden="true"><path d="M0 0 115 115h15l12 27L250 250V0z"/><path d="M128.3 109C113.8 99.7 119 89.6 119 89.6 122 82.7 120.5 78.6 120.5 78.6 119.2 72 123.4 76.3 123.4 76.3 127.3 80.9 125.5 87.3 125.5 87.3 122.9 97.6 130.6 101.9 134.4 103.2" fill="currentcolor" style="transform-origin:130px 106px" class="octo-arm"/><path d="M115 115C114.9 115.1 118.7 116.5 119.8 115.4l13.9-13.8C136.9 99.2 139.9 98.4 142.2 98.6 133.8 88 127.5 74.4 143.8 58 148.5 53.4 154 51.2 159.7 51 160.3 49.4 163.2 43.6 171.4 40.1 171.4 40.1 176.1 42.5 178.8 56.2 183.1 58.6 187.2 61.8 190.9 65.4 194.5 69 197.7 73.2 200.1 77.6 213.8 80.2 216.3 84.9 216.3 84.9 212.7 93.1 206.9 96 205.4 96.6 205.1 102.4 203 107.8 198.3 112.5 181.9 128.9 168.3 122.5 157.7 114.1 157.9 116.9 156.7 120.9 152.7 124.9L141 136.5C139.8 137.7 141.6 141.9 141.8 141.8z" fill="currentcolor" class="octo-body"/></svg></a><div id=mask></div></div><link rel=stylesheet href=/lib/katex/katex.min.css><link rel=stylesheet href=/lib/katex/copy-tex.min.css><link rel=stylesheet href=/lib/cookieconsent/cookieconsent.min.css><script type=text/javascript src=/lib/autocomplete/autocomplete.min.js defer></script><script type=text/javascript src=/lib/lunr/lunr.min.js defer></script><script type=text/javascript src=/lib/lunr/lunr.stemmer.support.min.js defer></script><script type=text/javascript src=/lib/lunr/lunr.zh.min.js defer></script><script type=text/javascript src=/lib/lazysizes/lazysizes.min.js async defer></script><script type=text/javascript src=/lib/sharer/sharer.min.js async defer></script><script type=text/javascript src=/lib/katex/katex.min.js defer></script><script type=text/javascript src=/lib/katex/auto-render.min.js defer></script><script type=text/javascript src=/lib/katex/copy-tex.min.js defer></script><script type=text/javascript src=/lib/katex/mhchem.min.js defer></script><script type=text/javascript src=/lib/cookieconsent/cookieconsent.min.js defer></script><script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async defer></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",editLockTitle:"锁定可编辑代码块",editUnLockTitle:"解锁可编辑代码块",editable:!0,maxShownLines:10},comment:{giscus:{darkTheme:"dark",lightTheme:"light"}},cookieconsent:{content:{dismiss:"同意",link:"了解更多",message:"本网站使用 Cookies 来改善您的浏览体验。"},enable:!0,palette:{button:{background:"#f0f0f0"},popup:{background:"#1aa3ff"}},theme:"edgeless"},enablePWA:!0,math:{delimiters:[{display:!0,left:"$$",right:"$$"},{display:!0,left:"\\[",right:"\\]"},{display:!1,left:"$",right:"$"},{display:!1,left:"\\(",right:"\\)"}],strict:!1},search:{highlightTag:"em",lunrIndexURL:"/index.json",lunrLanguageCode:"zh",lunrSegmentitURL:"/lib/lunr/lunr.segmentit.js",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"lunr"}}</script><script type=text/javascript src=/js/theme.min.js defer></script><script type=text/javascript src=/js/_custom.min.js defer></script><script type=text/javascript>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-Y7BJE11JP4",{anonymize_ip:!0})</script><script type=text/javascript src="https://www.googletagmanager.com/gtag/js?id=G-Y7BJE11JP4" async></script></body></html>
