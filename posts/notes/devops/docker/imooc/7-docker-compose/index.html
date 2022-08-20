@@ -9,7 +9,9 @@
 黄波</a></span>
 <span class=post-category>收录于 <a href=/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/><i class="fa-regular fa-folder fa-fw"></i>&nbsp;学习笔记</a>&ensp;<a href=/categories/docker/><i class="fa-regular fa-folder fa-fw"></i>&nbsp;docker</a></span></div><div class=post-meta-line><span title="2022-08-14 00:00:00"><i class="fa-regular fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2022-08-14>2022-08-14</time>
 </span>&nbsp;<i class="fa-solid fa-pencil-alt fa-fw"></i>&nbsp;约 830 字&nbsp;
-<i class="fa-regular fa-clock fa-fw"></i>&nbsp;预计阅读 2 分钟&nbsp;</div></div><div class="details toc" id=toc-static kept=false><div class="details-summary toc-title"><span>目录</span>
+<i class="fa-regular fa-clock fa-fw"></i>&nbsp;预计阅读 2 分钟&nbsp;<span id=busuanzi_container_page_pv class="busuanzi_visitors comment-visitors" data-flag-title="Docker 学习笔记（七）docker compose">
+<i class="fa-regular fa-eye fa-fw"></i>&nbsp;<span id=busuanzi_value_page_pv>-</span>&nbsp;次阅读
+</span>&nbsp;</div></div><div class="details toc" id=toc-static kept=false><div class="details-summary toc-title"><span>目录</span>
 <span><i class="details-icon fa-solid fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#1-简介>1. 简介</a></li><li><a href=#2-compose-文件结构和命令>2. compose 文件结构和命令</a></li><li><a href=#3-compose-网络>3. compose 网络</a></li><li><a href=#4-compose-水平扩展>4. compose 水平扩展</a></li><li><a href=#5-compose-环境变量>5. compose 环境变量</a></li><li><a href=#6-服务依赖和健康检查>6. 服务依赖和健康检查</a></li></ul></nav></div></div><div class=content id=content><h2 id=1-简介>1. 简介</h2><ul><li>docker-compose： 定义和运行多个 Docker 容器的应用</li><li>compose v2： Docker 官方用 GO 语言 重写 了 Docker Compose，并将其作为了 docker cli 的子命令，称为 Compose V2。<code>docker-compose</code> 命令替换为 <code>docker compose</code>，即可使用 Compose v2</li></ul><h2 id=2-compose-文件结构和命令>2. compose 文件结构和命令</h2><p>基本语法结构：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3

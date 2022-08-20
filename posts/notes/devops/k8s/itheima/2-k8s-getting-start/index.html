@@ -9,7 +9,9 @@
 黄波</a></span>
 <span class=post-category>收录于 <a href=/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/><i class="fa-regular fa-folder fa-fw"></i>&nbsp;学习笔记</a>&ensp;<a href=/categories/k8s/><i class="fa-regular fa-folder fa-fw"></i>&nbsp;K8s</a></span></div><div class=post-meta-line><span title="2022-08-19 00:00:00"><i class="fa-regular fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2022-08-19>2022-08-19</time>
 </span>&nbsp;<i class="fa-solid fa-pencil-alt fa-fw"></i>&nbsp;约 1813 字&nbsp;
-<i class="fa-regular fa-clock fa-fw"></i>&nbsp;预计阅读 4 分钟&nbsp;</div></div><div class="details toc" id=toc-static kept=false><div class="details-summary toc-title"><span>目录</span>
+<i class="fa-regular fa-clock fa-fw"></i>&nbsp;预计阅读 4 分钟&nbsp;<span id=busuanzi_container_page_pv class="busuanzi_visitors comment-visitors" data-flag-title="K8s 学习笔记（二）入门">
+<i class="fa-regular fa-eye fa-fw"></i>&nbsp;<span id=busuanzi_value_page_pv>-</span>&nbsp;次阅读
+</span>&nbsp;</div></div><div class="details toc" id=toc-static kept=false><div class="details-summary toc-title"><span>目录</span>
 <span><i class="details-icon fa-solid fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#1-namespace>1. Namespace</a></li><li><a href=#2-pod>2. Pod</a></li><li><a href=#3-label>3. Label</a></li><li><a href=#4-deployment>4. Deployment</a></li><li><a href=#5-service>5. Service</a></li></ul></nav></div></div><div class=content id=content><h2 id=1-namespace>1. Namespace</h2><p>Namespace是kubernetes系统中的一种非常重要资源，它的主要作用是用来实现<strong>多套环境的资源隔离</strong>或者<strong>多租户的资源隔离</strong>。</p><ul><li>默认情况下，所有 pod 都可以互相访问</li><li>Namespace 把资源进行逻辑上的分组</li><li>可以通过 K8s 的授权机制，将不同 namespace 分配给不同租户，实现租户的资源隔离，也可以限定不同租户的资源</li></ul><p>Kubernetes 会创建几个默认 namespace</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
