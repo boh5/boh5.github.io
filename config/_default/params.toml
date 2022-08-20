@@ -559,7 +559,7 @@ fontFamily = 'inherit'
 [ibruce]
 enable = true
 # 在文章中开启
-enablePost = false
+enablePost = true
 #   网站创立时间
 # 参数 `ibruce.siteTime` 自 v0.2.14 起已弃用，请改用 `footer.siteTime`
 # siteTime = '' # 例：'2019-02-03T19:30:34+08:00'
