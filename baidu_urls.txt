@@ -1,4 +1,5 @@
 https://dilless.github.io/posts/notes/devops/k8s/itheima/3-k8s-pod-advanced/
+https://dilless.github.io/posts/notes/datastructure_algorithm/zuochengyun/2-linked-list/
 https://dilless.github.io/posts/notes/devops/k8s/itheima/2-k8s-getting-start/
 https://dilless.github.io/posts/notes/devops/k8s/itheima/1-k8s-base/
 https://dilless.github.io/posts/notes/devops/docker/imooc/12-docker-security/
