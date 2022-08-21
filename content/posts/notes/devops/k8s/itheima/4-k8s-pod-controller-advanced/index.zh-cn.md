@@ -1,7 +1,7 @@
 ---
 title: K8s 学习笔记（四）Pod 控制器详解
 date: 2022-08-20T01:00:00+08:00
-lastmod: 2022-08-21T01:58:00+08:00
+lastmod: 2022-08-21T016:13:00+08:00
 categories:
   - 学习笔记
   - K8s
@@ -10,7 +10,6 @@ tags:
   - Kubernetes
   - pod
   - controller
-draft: true
 ---
 
 ## 1. Pod控制器介绍
@@ -200,5 +199,168 @@ deployment.apps/pc-deployment paused
 $ kubectl rollout resume deploy pc-deployment -n dev
 deployment.apps/pc-deployment resumed
 ```
+## 4. Horizontal Pod Autoscalar (HPA) 
+
+- HPA可以获取每个Pod利用率，然后和HPA中定义的指标进行对比，同时计算出需要伸缩的具体值，最后实现Pod的数量的调整。
+- 实现原理：HPA与之前的Deployment一样，也属于一种Kubernetes资源对象，它通过追踪分析RC控制的所有目标Pod的负载变化情况，来确定是否需要针对性地调整目标Pod的副本数。
+
+![Horizontal Pod Autoscalar](images/image-20200608155858271.png)
 
 
+**HPA 资源清单文件**
+
+```yaml
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: pc-hpa
+  namespace: dev
+spec:
+  minReplicas: 1  #最小pod数量
+  maxReplicas: 10 #最大pod数量
+  targetCPUUtilizationPercentage: 3 # CPU使用率指标，百分比
+  scaleTargetRef:   # 指定要控制的 deployment 信息
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nginx  
+```
+
+**流程**
+
+1. 创建 deploy
+2. 创建 HPA，绑定到 deploy
+3. 负载上升 pod 水平扩展
+4. 负载下架 pod 等待一段时间后再慢慢收缩
+
+## 5. DaemonSet (DS)
+
+DaemonSet类型的控制器可以保证在集群中的每一台（或指定）节点上都运行一个副本。一般适用于日志收集、节点监控等场景。
+
+如果一个Pod提供的功能是节点级别的（每个节点都需要且只需要一个），那么这类Pod就适合使用DaemonSet类型的控制器创建。
+
+![DaemonSet](images/image-20200612010223537.png)
+
+DaemonSet控制器的特点：
+
+- 每当向集群中添加一个节点时，指定的 Pod 副本也将添加到该节点上
+- 当节点从集群中移除时，Pod 也就被垃圾回收了
+
+**DS 资源清单文件**
+
+```yaml
+apiVersion: apps/v1 # 版本号
+kind: DaemonSet # 类型
+metadata: # 元数据
+  name:  pc-daemonset # rs名称
+  namespace: dev # 所属命名空间
+  labels: #标签
+    controller: daemonset
+spec: # 详情描述
+  revisionHistoryLimit: 3 # 保留历史版本
+  updateStrategy: # 更新策略
+    type: RollingUpdate # 滚动更新策略
+    rollingUpdate: # 滚动更新
+      maxUnavailable: 1 # 最大不可用状态的 Pod 的最大值，可以为百分比，也可以为整数
+  selector: # 选择器，通过它指定该控制器管理哪些pod
+    matchLabels:      # Labels匹配规则
+      app: nginx-pod
+    matchExpressions: # Expressions匹配规则
+      - {key: app, operator: In, values: [nginx-pod]}
+  template: # 模板，当副本数量不足时，会根据下面的模板创建pod副本
+    metadata:
+      labels:
+        app: nginx-pod
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.17.1
+          ports:
+            - containerPort: 80
+```
+
+## 6. Job
+
+Job，主要用于负责**批量处理**(一次要处理指定数量任务)短暂的**一次性**(每个任务仅运行一次就结束)任务。Job特点如下：
+
+- 当Job创建的pod执行成功结束时，Job将记录成功结束的pod数量
+- 当成功结束的pod达到指定的数量时，Job将完成执行
+
+**Job 资源清单文件**
+
+```yaml
+apiVersion: batch/v1 # 版本号
+kind: Job # 类型       
+metadata: # 元数据
+  name: pc-job # rs名称 
+  namespace: dev # 所属命名空间 
+  labels: #标签
+    controller: job
+spec: # 详情描述
+  completions: 1 # 指定job需要成功运行Pods的次数。默认值: 1
+  parallelism: 1 # 指定job在任一时刻应该并发运行Pods的数量。默认值: 1
+  activeDeadlineSeconds: 30 # 指定job可运行的时间期限，超过时间还未结束，系统将会尝试进行终止。
+  backoffLimit: 6 # 指定job失败后进行重试的次数。默认是6
+  manualSelector: true # 是否可以使用selector选择器选择pod，默认是false
+  selector: # 选择器，通过它指定该控制器管理哪些pod
+    matchLabels:      # Labels匹配规则
+      app: counter-pod
+    matchExpressions: # Expressions匹配规则
+      - {key: app, operator: In, values: [counter-pod]}
+  template: # 模板，当副本数量不足时，会根据下面的模板创建pod副本
+    metadata:
+      labels:
+        app: counter-pod
+    spec:
+      restartPolicy: Never # 重启策略只能设置为Never或者OnFailure
+      containers:
+        - name: counter
+          image: busybox:1.30
+          command: ["bin/sh","-c","for i in 9 8 7 6 5 4 3 2 1; do echo $i;sleep 2;done"]
+```
+
+## 7. CronJob (CJ)
+
+CronJob控制器以Job控制器资源为其管控对象，并借助它管理pod资源对象
+
+![CronJob](images/image-20200618213149531.png)
+
+**CJ 资源清单文件**
+
+```yaml
+apiVersion: batch/v1 # 版本号
+kind: CronJob # 类型
+metadata: # 元数据
+  name: pc-cronjob # rs名称
+  namespace: dev # 所属命名空间
+  labels: #标签
+    controller: cronjob
+spec: # 详情描述
+  schedule: "*/1 * * * *" # cron格式的作业调度运行时间点,用于控制任务在什么时间执行
+  concurrencyPolicy: Allow # 并发执行策略，用于定义前一次作业运行尚未完成时是否以及如何运行后一次的作业，Allow, Forbid, Replace
+  failedJobsHistoryLimit: 1 # 为失败的任务执行保留的历史记录数，默认为1
+  successfulJobsHistoryLimit: 3 # 为成功的任务执行保留的历史记录数，默认为3
+  startingDeadlineSeconds: 600 # 启动作业错误的超时时长
+  jobTemplate: # job控制器模板，用于为cronjob控制器生成job对象;下面其实就是job的定义
+    metadata: {}
+    spec:
+      completions: 1
+      parallelism: 1
+      activeDeadlineSeconds: 30
+      backoffLimit: 6
+      manualSelector: true
+      selector:
+        matchLabels:
+          app: counter-pod
+        matchExpressions: # 规则
+          - {key: app, operator: In, values: [counter-pod]}
+      template:
+        metadata:
+          labels:
+            app: counter-pod
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: counter
+              image: busybox:1.30
+              command: ["bin/sh","-c","for i in 9 8 7 6 5 4 3 2 1; do echo $i;sleep 20;done"]
+```
