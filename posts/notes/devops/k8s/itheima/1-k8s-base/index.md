@@ -96,6 +96,7 @@ kubernetes有多种部署方式，目前主流的方式有kubeadm、minikube、�
   - 禁用 iptables, firewall, selinux, swap
   - 网桥过滤和地址转发
 - 安装 docker, kubeadm, kubectl, kubelet
+- 安装、配置 ipvs
 - init master, 添加 node
 - 安装网络插件 flannel
 
