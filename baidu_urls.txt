@@ -1,3 +1,4 @@
+https://dilless.github.io/posts/notes/devops/k8s/itheima/5-k8s-service-advanced/
 https://dilless.github.io/posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/
 https://dilless.github.io/posts/notes/devops/k8s/itheima/3-k8s-pod-advanced/
 https://dilless.github.io/posts/notes/datastructure_algorithm/zuochengyun/2-linked-list/
