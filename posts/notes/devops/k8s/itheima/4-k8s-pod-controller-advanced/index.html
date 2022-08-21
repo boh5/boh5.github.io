@@ -1,0 +1,433 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=2"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>K8s 学习笔记（四）Pod 控制器详解 - 黄波的博客</title><meta name=author content="黄波"><meta name=author-link content="https://dilless.github.io"><meta name=description content="1. Pod控制器介绍 Pod控制器是管理pod的中间层，使用Pod控制器之后，只需要告诉Pod控制器，想要多少个什么样的Pod就可以了，它会创建"><meta name=keywords content="K8s,Kubernetes,pod,controller"><meta itemprop=name content="K8s 学习笔记（四）Pod 控制器详解"><meta itemprop=description content="1. Pod控制器介绍 Pod控制器是管理pod的中间层，使用Pod控制器之后，只需要告诉Pod控制器，想要多少个什么样的Pod就可以了，它会创建"><meta itemprop=datePublished content="2022-08-20T01:00:00+08:00"><meta itemprop=dateModified content="2022-08-20T01:00:00+08:00"><meta itemprop=wordCount content="4180"><meta itemprop=image content="https://dilless.github.io/apple-touch-icon.png"><meta itemprop=keywords content="K8s,Kubernetes,pod,controller,"><meta property="og:title" content="K8s 学习笔记（四）Pod 控制器详解"><meta property="og:description" content="1. Pod控制器介绍 Pod控制器是管理pod的中间层，使用Pod控制器之后，只需要告诉Pod控制器，想要多少个什么样的Pod就可以了，它会创建"><meta property="og:type" content="article"><meta property="og:url" content="https://dilless.github.io/posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/"><meta property="og:image" content="https://dilless.github.io/apple-touch-icon.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2022-08-20T01:00:00+08:00"><meta property="article:modified_time" content="2022-08-20T01:00:00+08:00"><meta property="og:site_name" content="黄波的博客"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://dilless.github.io/apple-touch-icon.png"><meta name=twitter:title content="K8s 学习笔记（四）Pod 控制器详解"><meta name=twitter:description content="1. Pod控制器介绍 Pod控制器是管理pod的中间层，使用Pod控制器之后，只需要告诉Pod控制器，想要多少个什么样的Pod就可以了，它会创建"><meta name=application-name content="黄波的博客"><meta name=apple-mobile-web-app-title content="黄波的博客"><meta name=theme-color media="(prefers-color-scheme: light)" content="#ffffff"><meta name=theme-color media="(prefers-color-scheme: dark)" content="#252627"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://dilless.github.io/posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/><link rel=prev href=https://dilless.github.io/posts/notes/devops/k8s/itheima/3-k8s-pod-advanced/><link rel=stylesheet href=/lib/normalize/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><meta name=google-site-verification content="3_Zf27e0mNtTIsBWn36hi_d4KTxPd2Zh1dsZMVnKK8k"><meta name=baidu-site-verification content="code-VsfDko5mls"><meta name=360-site-verification content="1a8490494ad7f3fe3e0f7e4a61ce0775"><meta name=sogou_site_verification content="X0yE1Xexzf"><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"K8s 学习笔记（四）Pod 控制器详解","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/dilless.github.io\/posts\/notes\/devops\/k8s\/itheima\/4-k8s-pod-controller-advanced\/"},"genre":"posts","keywords":"K8s, Kubernetes, pod, controller","wordcount":4180,"url":"https:\/\/dilless.github.io\/posts\/notes\/devops\/k8s\/itheima\/4-k8s-pod-controller-advanced\/","datePublished":"2022-08-20T01:00:00+08:00","dateModified":"2022-08-20T01:00:00+08:00","publisher":{"@type":"Organization","name":""},"author":{"@type":"Person","name":"黄波"},"description":""}</script></head><body header-desktop=sticky header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper github-corner=right><div class=header-title><a href=/ title=黄波的博客><img class="lazyload logo" src=/svg/loading.min.svg data-src=/apple-touch-icon.png data-srcset="/apple-touch-icon.png, /apple-touch-icon.png 1.5x, /apple-touch-icon.png 2x" data-sizes=auto alt=黄波的博客 title=黄波的博客><span class=header-title-text>黄波的博客</span></a><span class=header-subtitle>开发、学习、生活、技术分享</span></div><nav><ul class=menu><li class=menu-item><a class=menu-link href=/posts/><i class='fa-solid fa-archive fa-fw fa-sm'></i> 文章</a></li><li class=menu-item><a class=menu-link href=/categories/><i class='fa-solid fa-th fa-fw fa-sm'></i> 分类</a></li><li class=menu-item><a class=menu-link href=/tags/><i class='fa-solid fa-tags fa-fw fa-sm'></i> 标签</a></li><li class=menu-item><a class=menu-link href=/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/><i class='fa-solid fa-book fa-fw fa-sm'></i> 学习笔记</a></li><li class=menu-item><a class=menu-link href=/about/><i class='fa-solid fa-info-circle fa-fw fa-sm'></i> 关于</a></li><li class="menu-item delimiter"></li><li class="menu-item language"><span title=选择语言>简体中文<i class="dropdown-icon fa-solid fa-chevron-down"></i></span><ul class=sub-menu><li class=menu-item>没有更多翻译</li></ul></li><li class="menu-item search" id=search-desktop><input type=text placeholder="搜索文章标题或内容 ..." id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fa-solid fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fa-solid fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fa-solid fa-spinner fa-fw fa-spin"></i></span></li><li class="menu-item theme-switch" title=切换主题><i class="fa-solid fa-adjust fa-fw"></i></li></ul></nav></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=黄波的博客><img class="lazyload logo" src=/svg/loading.min.svg data-src=/apple-touch-icon.png data-srcset="/apple-touch-icon.png, /apple-touch-icon.png 1.5x, /apple-touch-icon.png 2x" data-sizes=auto alt=/apple-touch-icon.png title=/apple-touch-icon.png><span class=header-title-text>黄波的博客</span></a><span class=header-subtitle>开发、学习、生活、技术分享</span></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><nav><ul class=menu id=menu-mobile><li class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder="搜索文章标题或内容 ..." id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fa-solid fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fa-solid fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fa-solid fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></li><li class=menu-item><a class=menu-link href=/posts/><i class='fa-solid fa-archive fa-fw fa-sm'></i> 文章</a></li><li class=menu-item><a class=menu-link href=/categories/><i class='fa-solid fa-th fa-fw fa-sm'></i> 分类</a></li><li class=menu-item><a class=menu-link href=/tags/><i class='fa-solid fa-tags fa-fw fa-sm'></i> 标签</a></li><li class=menu-item><a class=menu-link href=/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/><i class='fa-solid fa-book fa-fw fa-sm'></i> 学习笔记</a></li><li class=menu-item><a class=menu-link href=/about/><i class='fa-solid fa-info-circle fa-fw fa-sm'></i> 关于</a></li><li class="menu-item theme-switch" title=切换主题><i class="fa-solid fa-adjust fa-fw"></i></li><li class="menu-item language"><span title=选择语言>简体中文<i class="dropdown-icon fa-solid fa-chevron-down"></i></span>
+<select class=language-select onchange="location=this.value"><option disabled>没有更多翻译</option></select></li></ul></nav></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=container page-style=normal><aside class=toc id=toc-auto><h2 class=toc-title>目录 <i class="toc-icon fa-solid fa-angle-down fa-fw"></i></h2><div class=toc-content id=toc-content-auto></div></aside><aside class=aside-custom></aside><article class="page single"><div class=header><h1 class="single-title animate__animated animate__flipInX"><span>K8s 学习笔记（四）Pod 控制器详解</span></h1></div><div class=post-meta><div class=post-meta-line><span class=post-author><a href=https://dilless.github.io title=作者 target=_blank rel="external nofollow noopener noreferrer author" class=author><i class="fa-solid fa-user-circle"></i>
+黄波</a></span>
+<span class=post-category>收录于 <a href=/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/><i class="fa-regular fa-folder fa-fw"></i>&nbsp;学习笔记</a>&ensp;<a href=/categories/k8s/><i class="fa-regular fa-folder fa-fw"></i>&nbsp;K8s</a></span></div><div class=post-meta-line><span title="2022-08-20 01:00:00"><i class="fa-regular fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2022-08-20>2022-08-20</time>
+</span>&nbsp;<i class="fa-solid fa-pencil-alt fa-fw"></i>&nbsp;约 4180 字&nbsp;
+<i class="fa-regular fa-clock fa-fw"></i>&nbsp;预计阅读 9 分钟&nbsp;<span id=busuanzi_container_page_pv class="busuanzi_visitors comment-visitors" data-flag-title="K8s 学习笔记（四）Pod 控制器详解">
+<i class="fa-regular fa-eye fa-fw"></i>&nbsp;<span id=busuanzi_value_page_pv>-</span>&nbsp;次阅读
+</span>&nbsp;</div></div><div class="details toc" id=toc-static kept=false><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fa-solid fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#1-pod控制器介绍>1. Pod控制器介绍</a></li><li><a href=#2-replicasetrs>2. ReplicaSet(RS)</a></li><li><a href=#3-deploymentdeploy>3. Deployment(Deploy)</a></li><li><a href=#4-horizontal-pod-autoscalar-hpa>4. Horizontal Pod Autoscalar (HPA)</a></li><li><a href=#5-daemonset-ds>5. DaemonSet (DS)</a></li><li><a href=#6-job>6. Job</a></li><li><a href=#7-cronjob-cj>7. CronJob (CJ)</a></li></ul></nav></div></div><div class=content id=content><h2 id=1-pod控制器介绍>1. Pod控制器介绍</h2><blockquote><p>Pod控制器是管理pod的中间层，使用Pod控制器之后，只需要告诉Pod控制器，想要多少个什么样的Pod就可以了，它会创建出满足条件的Pod并确保每一个Pod资源处于用户期望的目标状态。如果Pod资源在运行中出现故障，它会基于指定策略重新编排Pod。</p></blockquote><p>在kubernetes中，有很多类型的pod控制器，每种都有自己的适合的场景，常见的有下面这些：</p><ul><li>ReplicationController：比较原始的pod控制器，已经被废弃，由ReplicaSet替代</li><li>ReplicaSet：保证副本数量一直维持在期望值，并支持pod数量扩缩容，镜像版本升级</li><li><strong>Deployment</strong>：通过控制ReplicaSet来控制Pod，并支持滚动升级、回退版本</li><li>Horizontal Pod Autoscaler：可以根据集群负载自动水平调整Pod的数量，实现削峰填谷</li><li>DaemonSet：在集群中的指定Node上运行且仅运行一个副本，一般用于守护进程类的任务</li><li>Job：它创建出来的pod只要完成任务就立即退出，不需要重启或重建，用于执行一次性任务</li><li>Cronjob：它创建的Pod负责周期性任务控制，不需要持续后台运行</li><li>StatefulSet：管理有状态应用</li></ul><h2 id=2-replicasetrs>2. ReplicaSet(RS)</h2><p>ReplicaSet的主要作用是<strong>保证一定数量的pod正常运行</strong>，它会持续监听这些Pod的运行状态，一旦Pod发生故障，就会重启或重建。同时它还支持对pod数量的<strong>扩缩容</strong>和<strong>镜像版本的升降级</strong>。</p><p><strong>ReplicaSet资源清单文件</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>apps/v1</span><span class=w> </span><span class=c># 版本号</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>ReplicaSet</span><span class=w> </span><span class=c># 类型       </span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w> </span><span class=c># 元数据</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>pc-replicaset</span><span class=w> </span><span class=c># rs名称 </span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>dev</span><span class=w> </span><span class=c># 所属命名空间 </span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>labels</span><span class=p>:</span><span class=w> </span><span class=c>#标签</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>controller</span><span class=p>:</span><span class=w> </span><span class=l>rs</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w> </span><span class=c># 详情描述</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>replicas</span><span class=p>:</span><span class=w> </span><span class=m>3</span><span class=w> </span><span class=c># 副本数量</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>selector</span><span class=p>:</span><span class=w> </span><span class=c># 选择器，通过它指定该控制器管理哪些pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>matchLabels</span><span class=p>:</span><span class=w>      </span><span class=c># Labels匹配规则</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>nginx-pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>matchExpressions</span><span class=p>:</span><span class=w> </span><span class=c># Expressions匹配规则</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- {<span class=nt>key: app, operator: In, values</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=l>nginx-pod]}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>template</span><span class=p>:</span><span class=w> </span><span class=c># 模板，当副本数量不足时，会根据下面的模板创建pod副本，就是 pod 的配置</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>nginx-pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx:1.17.1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>containerPort</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p><strong>扩缩容</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 编辑rs的副本数量，修改spec:replicas: 6即可</span>
+</span></span><span class=line><span class=cl>$ kubectl edit rs pc-replicaset -n dev
+</span></span><span class=line><span class=cl>replicaset.apps/pc-replicaset edited
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 当然也可以直接使用命令实现</span>
+</span></span><span class=line><span class=cl><span class=c1># 使用scale命令实现扩缩容， 后面--replicas=n直接指定目标数量即可</span>
+</span></span><span class=line><span class=cl>$ kubectl scale rs pc-replicaset --replicas<span class=o>=</span><span class=m>2</span> -n dev
+</span></span><span class=line><span class=cl>replicaset.apps/pc-replicaset scaled
+</span></span></code></pre></td></tr></table></div></div><p><strong>升降级</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 编辑rs的容器镜像 - image: nginx:1.17.2</span>
+</span></span><span class=line><span class=cl>$ kubectl edit rs pc-replicaset -n dev
+</span></span><span class=line><span class=cl>replicaset.apps/pc-replicaset edited
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 同样的道理，也可以使用命令完成这个工作</span>
+</span></span><span class=line><span class=cl><span class=c1># kubectl set image rs rs名称 容器=镜像版本 -n namespace</span>
+</span></span><span class=line><span class=cl>$ kubectl <span class=nb>set</span> image rs pc-replicaset <span class=nv>nginx</span><span class=o>=</span>nginx:1.17.1  -n dev
+</span></span><span class=line><span class=cl>replicaset.apps/pc-replicaset image updated
+</span></span></code></pre></td></tr></table></div></div><p><strong>删除 ReplicaSet</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 使用kubectl delete命令会删除此RS以及它管理的Pod</span>
+</span></span><span class=line><span class=cl><span class=c1># 在kubernetes删除RS前，会将RS的replicasclear调整为0，等待所有的Pod被删除后，在执行RS对象的删除</span>
+</span></span><span class=line><span class=cl>$ kubectl delete rs pc-replicaset -n dev
+</span></span><span class=line><span class=cl>replicaset.apps <span class=s2>&#34;pc-replicaset&#34;</span> deleted
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 如果希望仅仅删除RS对象（保留Pod），可以使用kubectl delete命令时添加--cascade=false选项（不推荐）。</span>
+</span></span><span class=line><span class=cl>$ kubectl delete rs pc-replicaset -n dev --cascade<span class=o>=</span><span class=nb>false</span>
+</span></span><span class=line><span class=cl>replicaset.apps <span class=s2>&#34;pc-replicaset&#34;</span> deleted
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 也可以使用yaml直接删除(推荐)</span>
+</span></span><span class=line><span class=cl>$ kubectl delete -f pc-replicaset.yaml
+</span></span><span class=line><span class=cl>replicaset.apps <span class=s2>&#34;pc-replicaset&#34;</span> deleted
+</span></span></code></pre></td></tr></table></div></div><h2 id=3-deploymentdeploy>3. Deployment(Deploy)</h2><p>为了更好的解决服务编排的问题，kubernetes在V1.2版本开始，引入了Deployment控制器。值得一提的是，这种控制器并不直接管理pod，而是通过管理ReplicaSet来简介管理Pod，即：Deployment管理ReplicaSet，ReplicaSet管理Pod。所以Deployment比ReplicaSet功能更加强大。</p><p><img class=lazyload src=/svg/loading.min.svg data-src=images/image-20200612005524778.png data-srcset="/posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/images/image-20200612005524778.png, images/image-20200612005524778.png 1.5x, /posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/images/image-20200612005524778.png 2x" data-sizes=auto alt=/posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/images/image-20200612005524778.png title=Deployment></p><p>Deployment主要功能有下面几个：</p><ul><li>支持ReplicaSet的所有功能</li><li>支持发布的停止、继续</li><li>支持滚动升级和回滚版本</li></ul><blockquote><p>版本回滚通过保留 rs 来实现，升级后，原 rs 依旧存在，只是 pod 数量变为 0</p></blockquote><p><strong>Deployment 资源清单文件</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>apps/v1</span><span class=w> </span><span class=c># 版本号</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Deployment</span><span class=w> </span><span class=c># 类型</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w> </span><span class=c># 元数据</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>pc-deployment</span><span class=w> </span><span class=c># rs名称</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>dev</span><span class=w> </span><span class=c># 所属命名空间</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>labels</span><span class=p>:</span><span class=w> </span><span class=c>#标签</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>controller</span><span class=p>:</span><span class=w> </span><span class=l>deploy</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w> </span><span class=c># 详情描述</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>replicas</span><span class=p>:</span><span class=w> </span><span class=m>3</span><span class=w> </span><span class=c># 副本数量</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>revisionHistoryLimit</span><span class=p>:</span><span class=w> </span><span class=m>3</span><span class=w> </span><span class=c># 保留历史版本，默认 10，通过保留 rs 来实现</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>paused</span><span class=p>:</span><span class=w> </span><span class=kc>false</span><span class=w> </span><span class=c># 暂停部署，默认是false</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>progressDeadlineSeconds</span><span class=p>:</span><span class=w> </span><span class=m>600</span><span class=w> </span><span class=c># 部署超时时间（s），默认是600</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>strategy</span><span class=p>:</span><span class=w> </span><span class=c># 策略</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>RollingUpdate</span><span class=w> </span><span class=c># 滚动更新策略</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>rollingUpdate</span><span class=p>:</span><span class=w> </span><span class=c># 滚动更新</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>maxSurge</span><span class=p>:</span><span class=w> </span><span class=m>30</span><span class=l>%</span><span class=w> </span><span class=c># 最大额外可以存在的副本数，可以为百分比，也可以为整数</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>maxUnavailable</span><span class=p>:</span><span class=w> </span><span class=m>30</span><span class=l>%</span><span class=w> </span><span class=c># 最大不可用状态的 Pod 的最大值，可以为百分比，也可以为整数</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>selector</span><span class=p>:</span><span class=w> </span><span class=c># 选择器，通过它指定该控制器管理哪些pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>matchLabels</span><span class=p>:</span><span class=w> </span><span class=c># Labels匹配规则</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>nginx-pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>matchExpressions</span><span class=p>:</span><span class=w> </span><span class=c># Expressions匹配规则</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- {<span class=w> </span><span class=nt>key: app, operator: In, values</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=w> </span><span class=l>nginx-pod ] }</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>template</span><span class=p>:</span><span class=w> </span><span class=c># 模板，当副本数量不足时，会根据下面的模板创建pod副本</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>nginx-pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx:1.17.1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span>- <span class=nt>containerPort</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p><strong>扩缩容</strong></p><p>同 ReplicaSet 类似</p><p><strong>镜像更新</strong></p><p>eployment支持两种更新策略:<code>重建更新</code>和<code>滚动更新</code>,可以通过<code>strategy</code>指定策略类型,支持两个属性:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>strategy：指定新的Pod替换旧的Pod的策略， 支持两个属性：
+</span></span><span class=line><span class=cl>  type：指定策略类型，支持以下两种策略
+</span></span><span class=line><span class=cl>    (Recreate：在创建出新的Pod之前会先杀掉所有已存在的Pod
+</span></span><span class=line><span class=cl>    RollingUpdate：滚动更新，就是杀死一部分，就启动一部分，在更新过程中，存在两个版本Pod)
+</span></span><span class=line><span class=cl>  rollingUpdate：当type为RollingUpdate时生效，用于为RollingUpdate设置参数，支持两个属性：
+</span></span><span class=line><span class=cl>    maxUnavailable：用来指定在升级过程中不可用Pod的最大数量，默认为25%。
+</span></span><span class=line><span class=cl>    maxSurge： 用来指定在升级过程中可以超过期望的Pod的最大数量，默认为25%。
+</span></span></code></pre></td></tr></table></div></div><p><strong>版本回退</strong></p><p>deployment支持版本升级过程中的暂停、继续功能以及版本回退等诸多功能。</p><p><code>kubectl rollout</code>：版本升级相关功能，支持下面的选项：</p><ul><li>status 显示当前升级状态</li><li>history 显示升级历史记录</li><li>pause 暂停版本升级过程</li><li>resume 继续已经暂停的版本升级过程</li><li>restart 重启版本升级过程</li><li>undo 回滚到上一级版本（可以使用&ndash;to-revision回滚到指定版本）</li></ul><p><strong>金丝雀发布</strong></p><p>比如有一批新的Pod资源创建完成后立即暂停更新过程，此时，仅存在一部分新版本的应用，主体部分还是旧的版本。然后，再筛选一小部分的用户请求路由到新版本的Pod应用，继续观察能否稳定地按期望的方式运行。确定没问题之后再继续完成余下的Pod资源滚动更新，否则立即回滚更新操作。这就是所谓的<strong>金丝雀发布</strong>。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 更新deployment的版本，并配置暂停deployment</span>
+</span></span><span class=line><span class=cl>$  kubectl <span class=nb>set</span> image deploy pc-deployment <span class=nv>nginx</span><span class=o>=</span>nginx:1.17.4 -n dev <span class=o>&amp;&amp;</span> kubectl rollout pause deployment pc-deployment  -n dev
+</span></span><span class=line><span class=cl>deployment.apps/pc-deployment image updated
+</span></span><span class=line><span class=cl>deployment.apps/pc-deployment paused
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 确保更新的pod没问题了，继续更新</span>
+</span></span><span class=line><span class=cl>$ kubectl rollout resume deploy pc-deployment -n dev
+</span></span><span class=line><span class=cl>deployment.apps/pc-deployment resumed
+</span></span></code></pre></td></tr></table></div></div><h2 id=4-horizontal-pod-autoscalar-hpa>4. Horizontal Pod Autoscalar (HPA)</h2><ul><li>HPA可以获取每个Pod利用率，然后和HPA中定义的指标进行对比，同时计算出需要伸缩的具体值，最后实现Pod的数量的调整。</li><li>实现原理：HPA与之前的Deployment一样，也属于一种Kubernetes资源对象，它通过追踪分析RC控制的所有目标Pod的负载变化情况，来确定是否需要针对性地调整目标Pod的副本数。</li></ul><p><img class=lazyload src=/svg/loading.min.svg data-src=images/image-20200608155858271.png data-srcset="/posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/images/image-20200608155858271.png, images/image-20200608155858271.png 1.5x, /posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/images/image-20200608155858271.png 2x" data-sizes=auto alt=/posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/images/image-20200608155858271.png title="Horizontal Pod Autoscalar"></p><p><strong>HPA 资源清单文件</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>autoscaling/v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>HorizontalPodAutoscaler</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>pc-hpa</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>dev</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>minReplicas</span><span class=p>:</span><span class=w> </span><span class=m>1</span><span class=w>  </span><span class=c>#最小pod数量</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>maxReplicas</span><span class=p>:</span><span class=w> </span><span class=m>10</span><span class=w> </span><span class=c>#最大pod数量</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>targetCPUUtilizationPercentage</span><span class=p>:</span><span class=w> </span><span class=m>3</span><span class=w> </span><span class=c># CPU使用率指标，百分比</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>scaleTargetRef</span><span class=p>:</span><span class=w>   </span><span class=c># 指定要控制的 deployment 信息</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>apps/v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Deployment</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx  </span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p><strong>流程</strong></p><ol><li>创建 deploy</li><li>创建 HPA，绑定到 deploy</li><li>负载上升 pod 水平扩展</li><li>负载下架 pod 等待一段时间后再慢慢收缩</li></ol><h2 id=5-daemonset-ds>5. DaemonSet (DS)</h2><p>DaemonSet类型的控制器可以保证在集群中的每一台（或指定）节点上都运行一个副本。一般适用于日志收集、节点监控等场景。</p><p>如果一个Pod提供的功能是节点级别的（每个节点都需要且只需要一个），那么这类Pod就适合使用DaemonSet类型的控制器创建。</p><p><img class=lazyload src=/svg/loading.min.svg data-src=images/image-20200612010223537.png data-srcset="/posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/images/image-20200612010223537.png, images/image-20200612010223537.png 1.5x, /posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/images/image-20200612010223537.png 2x" data-sizes=auto alt=/posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/images/image-20200612010223537.png title=DaemonSet></p><p>DaemonSet控制器的特点：</p><ul><li>每当向集群中添加一个节点时，指定的 Pod 副本也将添加到该节点上</li><li>当节点从集群中移除时，Pod 也就被垃圾回收了</li></ul><p><strong>DS 资源清单文件</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>apps/v1</span><span class=w> </span><span class=c># 版本号</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>DaemonSet</span><span class=w> </span><span class=c># 类型</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w> </span><span class=c># 元数据</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w>  </span><span class=l>pc-daemonset</span><span class=w> </span><span class=c># rs名称</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>dev</span><span class=w> </span><span class=c># 所属命名空间</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>labels</span><span class=p>:</span><span class=w> </span><span class=c>#标签</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>controller</span><span class=p>:</span><span class=w> </span><span class=l>daemonset</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w> </span><span class=c># 详情描述</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>revisionHistoryLimit</span><span class=p>:</span><span class=w> </span><span class=m>3</span><span class=w> </span><span class=c># 保留历史版本</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>updateStrategy</span><span class=p>:</span><span class=w> </span><span class=c># 更新策略</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>RollingUpdate</span><span class=w> </span><span class=c># 滚动更新策略</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>rollingUpdate</span><span class=p>:</span><span class=w> </span><span class=c># 滚动更新</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>maxUnavailable</span><span class=p>:</span><span class=w> </span><span class=m>1</span><span class=w> </span><span class=c># 最大不可用状态的 Pod 的最大值，可以为百分比，也可以为整数</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>selector</span><span class=p>:</span><span class=w> </span><span class=c># 选择器，通过它指定该控制器管理哪些pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>matchLabels</span><span class=p>:</span><span class=w>      </span><span class=c># Labels匹配规则</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>nginx-pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>matchExpressions</span><span class=p>:</span><span class=w> </span><span class=c># Expressions匹配规则</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- {<span class=nt>key: app, operator: In, values</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=l>nginx-pod]}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>template</span><span class=p>:</span><span class=w> </span><span class=c># 模板，当副本数量不足时，会根据下面的模板创建pod副本</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>nginx-pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx:1.17.1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span>- <span class=nt>containerPort</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h2 id=6-job>6. Job</h2><p>Job，主要用于负责<strong>批量处理</strong>(一次要处理指定数量任务)短暂的<strong>一次性</strong>(每个任务仅运行一次就结束)任务。Job特点如下：</p><ul><li>当Job创建的pod执行成功结束时，Job将记录成功结束的pod数量</li><li>当成功结束的pod达到指定的数量时，Job将完成执行</li></ul><p><strong>Job 资源清单文件</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>batch/v1</span><span class=w> </span><span class=c># 版本号</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Job</span><span class=w> </span><span class=c># 类型       </span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w> </span><span class=c># 元数据</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>pc-job</span><span class=w> </span><span class=c># rs名称 </span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>dev</span><span class=w> </span><span class=c># 所属命名空间 </span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>labels</span><span class=p>:</span><span class=w> </span><span class=c>#标签</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>controller</span><span class=p>:</span><span class=w> </span><span class=l>job</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w> </span><span class=c># 详情描述</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>completions: 1 # 指定job需要成功运行Pods的次数。默认值</span><span class=p>:</span><span class=w> </span><span class=m>1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>parallelism: 1 # 指定job在任一时刻应该并发运行Pods的数量。默认值</span><span class=p>:</span><span class=w> </span><span class=m>1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>activeDeadlineSeconds</span><span class=p>:</span><span class=w> </span><span class=m>30</span><span class=w> </span><span class=c># 指定job可运行的时间期限，超过时间还未结束，系统将会尝试进行终止。</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>backoffLimit</span><span class=p>:</span><span class=w> </span><span class=m>6</span><span class=w> </span><span class=c># 指定job失败后进行重试的次数。默认是6</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>manualSelector</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w> </span><span class=c># 是否可以使用selector选择器选择pod，默认是false</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>selector</span><span class=p>:</span><span class=w> </span><span class=c># 选择器，通过它指定该控制器管理哪些pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>matchLabels</span><span class=p>:</span><span class=w>      </span><span class=c># Labels匹配规则</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>counter-pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>matchExpressions</span><span class=p>:</span><span class=w> </span><span class=c># Expressions匹配规则</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- {<span class=nt>key: app, operator: In, values</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=l>counter-pod]}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>template</span><span class=p>:</span><span class=w> </span><span class=c># 模板，当副本数量不足时，会根据下面的模板创建pod副本</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>counter-pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>restartPolicy</span><span class=p>:</span><span class=w> </span><span class=l>Never</span><span class=w> </span><span class=c># 重启策略只能设置为Never或者OnFailure</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>counter</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>busybox:1.30</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=s2>&#34;bin/sh&#34;</span><span class=p>,</span><span class=s2>&#34;-c&#34;</span><span class=p>,</span><span class=s2>&#34;for i in 9 8 7 6 5 4 3 2 1; do echo $i;sleep 2;done&#34;</span><span class=p>]</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h2 id=7-cronjob-cj>7. CronJob (CJ)</h2><p>CronJob控制器以Job控制器资源为其管控对象，并借助它管理pod资源对象</p><p><img class=lazyload src=/svg/loading.min.svg data-src=images/image-20200618213149531.png data-srcset="/posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/images/image-20200618213149531.png, images/image-20200618213149531.png 1.5x, /posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/images/image-20200618213149531.png 2x" data-sizes=auto alt=/posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/images/image-20200618213149531.png title=CronJob></p><p><strong>CJ 资源清单文件</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>batch/v1</span><span class=w> </span><span class=c># 版本号</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>CronJob</span><span class=w> </span><span class=c># 类型</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w> </span><span class=c># 元数据</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>pc-cronjob</span><span class=w> </span><span class=c># rs名称</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>namespace</span><span class=p>:</span><span class=w> </span><span class=l>dev</span><span class=w> </span><span class=c># 所属命名空间</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>labels</span><span class=p>:</span><span class=w> </span><span class=c>#标签</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>controller</span><span class=p>:</span><span class=w> </span><span class=l>cronjob</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w> </span><span class=c># 详情描述</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>schedule</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;*/1 * * * *&#34;</span><span class=w> </span><span class=c># cron格式的作业调度运行时间点,用于控制任务在什么时间执行</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>concurrencyPolicy</span><span class=p>:</span><span class=w> </span><span class=l>Allow</span><span class=w> </span><span class=c># 并发执行策略，用于定义前一次作业运行尚未完成时是否以及如何运行后一次的作业，Allow, Forbid, Replace</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>failedJobsHistoryLimit</span><span class=p>:</span><span class=w> </span><span class=m>1</span><span class=w> </span><span class=c># 为失败的任务执行保留的历史记录数，默认为1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>successfulJobsHistoryLimit</span><span class=p>:</span><span class=w> </span><span class=m>3</span><span class=w> </span><span class=c># 为成功的任务执行保留的历史记录数，默认为3</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>startingDeadlineSeconds</span><span class=p>:</span><span class=w> </span><span class=m>600</span><span class=w> </span><span class=c># 启动作业错误的超时时长</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>jobTemplate</span><span class=p>:</span><span class=w> </span><span class=c># job控制器模板，用于为cronjob控制器生成job对象;下面其实就是job的定义</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>metadata</span><span class=p>:</span><span class=w> </span>{}<span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>completions</span><span class=p>:</span><span class=w> </span><span class=m>1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>parallelism</span><span class=p>:</span><span class=w> </span><span class=m>1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>activeDeadlineSeconds</span><span class=p>:</span><span class=w> </span><span class=m>30</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>backoffLimit</span><span class=p>:</span><span class=w> </span><span class=m>6</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>manualSelector</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>selector</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>matchLabels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>counter-pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>matchExpressions</span><span class=p>:</span><span class=w> </span><span class=c># 规则</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span>- {<span class=nt>key: app, operator: In, values</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=l>counter-pod]}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>template</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>counter-pod</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>restartPolicy</span><span class=p>:</span><span class=w> </span><span class=l>Never</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>counter</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>              </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>busybox:1.30</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>              </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=p>[</span><span class=s2>&#34;bin/sh&#34;</span><span class=p>,</span><span class=s2>&#34;-c&#34;</span><span class=p>,</span><span class=s2>&#34;for i in 9 8 7 6 5 4 3 2 1; do echo $i;sleep 20;done&#34;</span><span class=p>]</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span title="2022-08-20 01:00:00">更新于 2022-08-20</span></div><div class=post-info-license><span><a rel="license external nofollow noopener noreferrer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div><div class=post-info-line><div class=post-info-md><span><a href=/posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/index.md title=阅读原始文档 class=link-to-markdown>阅读原始文档</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://dilless.github.io/posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/ data-title="K8s 学习笔记（四）Pod 控制器详解" data-hashtags=K8s,Kubernetes,pod,controller><i class="fa-brands fa-twitter fa-fw"></i></a>
+<a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://dilless.github.io/posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/ data-hashtag=K8s><i class="fa-brands fa-facebook-square fa-fw"></i></a>
+<a href=javascript:void(0); title="分享到 WhatsApp" data-sharer=whatsapp data-url=https://dilless.github.io/posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/ data-title="K8s 学习笔记（四）Pod 控制器详解" data-web><i class="fa-brands fa-whatsapp fa-fw"></i></a>
+<a href=javascript:void(0); title="分享到 Line" data-sharer=line data-url=https://dilless.github.io/posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/ data-title="K8s 学习笔记（四）Pod 控制器详解"><i data-svg-src=/lib/simple-icons/icons/line.min.svg></i></a>
+<a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://dilless.github.io/posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/ data-title="K8s 学习笔记（四）Pod 控制器详解"><i class="fa-brands fa-weibo fa-fw"></i></a>
+<a href=javascript:void(0); title="分享到 Myspace" data-sharer=myspace data-url=https://dilless.github.io/posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/ data-title="K8s 学习笔记（四）Pod 控制器详解" data-description><i data-svg-src=/lib/simple-icons/icons/myspace.min.svg></i></a>
+<a href=javascript:void(0); title="分享到 Blogger" data-sharer=blogger data-url=https://dilless.github.io/posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/ data-title="K8s 学习笔记（四）Pod 控制器详解" data-description><i class="fa-brands fa-blogger fa-fw"></i></a>
+<a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://dilless.github.io/posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/ data-title="K8s 学习笔记（四）Pod 控制器详解"><i class="fa-brands fa-evernote fa-fw"></i></a></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fa-solid fa-tags fa-fw"></i>&nbsp;<a href=/tags/k8s/>K8s</a>,&nbsp;<a href=/tags/kubernetes/>Kubernetes</a>,&nbsp;<a href=/tags/pod/>pod</a>,&nbsp;<a href=/tags/controller/>controller</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/posts/notes/devops/k8s/itheima/3-k8s-pod-advanced/ class=prev rel=prev title="K8s 学习笔记（三）Pod 详解"><i class="fa-solid fa-angle-left fa-fw"></i>K8s 学习笔记（三）Pod 详解</a></div></div><div id=comments><div id=giscus><script src=https://giscus.app/client.js data-repo=dilless/dilless.github.io data-repo-id=R_kgDOHr9Jag data-category=Announcements data-category-id=DIC_kwDOHr9Jas4CQ396 data-mapping=title data-theme=preferred_color_scheme data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-lang=zh-CN data-loading=lazy crossorigin=anonymous async defer></script><noscript>Please enable JavaScript to view the comments powered by <a href=https://giscus.app/ rel="external nofollow noopener noreferrer">giscus</a>.</noscript></div></div></article></main><footer class=footer><div class=footer-container><div class="footer-line powered">由 <a href=https://gohugo.io/ target=_blank rel="external nofollow noopener noreferrer" title="Hugo 0.101.0">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/hugo-fixit/FixIt target=_blank rel="external nofollow noopener noreferrer" title="FixIt v0.2.16-RC"><img class=fixit-icon src=/images/fixit.svg alt="FixIt logo">&nbsp;FixIt</a></div><div class="footer-line copyright"><i class="fa-regular fa-copyright fa-fw"></i>
+<span itemprop=copyrightYear>2022</span><span class=author itemprop=copyrightHolder>
+<a href=https://dilless.github.io target=_blank rel="external nofollow noopener noreferrer">黄波</a></span><span class="license footer-divider"><a rel="license external nofollow noopener noreferrer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div><div class="footer-line statistics"></div><div class="footer-line ibruce"><span id=busuanzi_container_site_uv title=总访客数><i class="fa-regular fa-user fa-fw"></i>&nbsp;<span id=busuanzi_value_site_uv><i class="fa fa-spinner fa-spin fa-fw"></i></span></span><span id=busuanzi_container_site_pv class=footer-divider title=总访问量><i class="fa-regular fa-eye fa-fw"></i>&nbsp;<span id=busuanzi_value_site_pv><i class="fa fa-spinner fa-spin fa-fw"></i></span></span></div></div></footer></div><div class=widgets><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fa-solid fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fa-solid fa-comment fa-fw"></i></a></div><a href=https://github.com/dilless title="在 GitHub 上找到我" target=_blank rel="external nofollow noopener noreferrer" class="github-corner right d-none-mobile"><svg viewBox="0 0 250 250" aria-hidden="true"><path d="M0 0 115 115h15l12 27L250 250V0z"/><path d="M128.3 109C113.8 99.7 119 89.6 119 89.6 122 82.7 120.5 78.6 120.5 78.6 119.2 72 123.4 76.3 123.4 76.3 127.3 80.9 125.5 87.3 125.5 87.3 122.9 97.6 130.6 101.9 134.4 103.2" fill="currentcolor" style="transform-origin:130px 106px" class="octo-arm"/><path d="M115 115C114.9 115.1 118.7 116.5 119.8 115.4l13.9-13.8C136.9 99.2 139.9 98.4 142.2 98.6 133.8 88 127.5 74.4 143.8 58 148.5 53.4 154 51.2 159.7 51 160.3 49.4 163.2 43.6 171.4 40.1 171.4 40.1 176.1 42.5 178.8 56.2 183.1 58.6 187.2 61.8 190.9 65.4 194.5 69 197.7 73.2 200.1 77.6 213.8 80.2 216.3 84.9 216.3 84.9 212.7 93.1 206.9 96 205.4 96.6 205.1 102.4 203 107.8 198.3 112.5 181.9 128.9 168.3 122.5 157.7 114.1 157.9 116.9 156.7 120.9 152.7 124.9L141 136.5C139.8 137.7 141.6 141.9 141.8 141.8z" fill="currentcolor" class="octo-body"/></svg></a><div id=mask></div></div><link rel=stylesheet href=/lib/katex/katex.min.css><link rel=stylesheet href=/lib/katex/copy-tex.min.css><link rel=stylesheet href=/lib/cookieconsent/cookieconsent.min.css><script type=text/javascript src=/lib/autocomplete/autocomplete.min.js defer></script><script type=text/javascript src=/lib/lunr/lunr.min.js defer></script><script type=text/javascript src=/lib/lunr/lunr.stemmer.support.min.js defer></script><script type=text/javascript src=/lib/lunr/lunr.zh.min.js defer></script><script type=text/javascript src=/lib/lazysizes/lazysizes.min.js async defer></script><script type=text/javascript src=/lib/sharer/sharer.min.js async defer></script><script type=text/javascript src=/lib/katex/katex.min.js defer></script><script type=text/javascript src=/lib/katex/auto-render.min.js defer></script><script type=text/javascript src=/lib/katex/copy-tex.min.js defer></script><script type=text/javascript src=/lib/katex/mhchem.min.js defer></script><script type=text/javascript src=/lib/cookieconsent/cookieconsent.min.js defer></script><script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async defer></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",editLockTitle:"锁定可编辑代码块",editUnLockTitle:"解锁可编辑代码块",editable:!0,maxShownLines:10},comment:{giscus:{darkTheme:"dark",lightTheme:"light"}},cookieconsent:{content:{dismiss:"同意",link:"了解更多",message:"本网站使用 Cookies 来改善您的浏览体验。"},enable:!0,palette:{button:{background:"#f0f0f0"},popup:{background:"#1aa3ff"}},theme:"edgeless"},enablePWA:!0,math:{delimiters:[{display:!0,left:"$$",right:"$$"},{display:!0,left:"\\[",right:"\\]"},{display:!1,left:"$",right:"$"},{display:!1,left:"\\(",right:"\\)"}],strict:!1},search:{highlightTag:"em",lunrIndexURL:"/index.json",lunrLanguageCode:"zh",lunrSegmentitURL:"/lib/lunr/lunr.segmentit.js",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"lunr"}}</script><script type=text/javascript src=/js/theme.min.js defer></script><script type=text/javascript src=/js/_custom.min.js defer></script><script type=text/javascript>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date),gtag("config","G-Y7BJE11JP4",{anonymize_ip:!0})</script><script type=text/javascript src="https://www.googletagmanager.com/gtag/js?id=G-Y7BJE11JP4" async></script></body></html>
