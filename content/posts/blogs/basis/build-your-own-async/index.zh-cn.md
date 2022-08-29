@@ -1,5 +1,5 @@
 ---
-title: 深入理解 Asyncio，从零开始构建你自己的 Async
+title: 深入理解 Asyncio，从零开始构建你自己的并发调度器
 date: 2022-08-28T15:00:00+08:00
 lastmod: 2022-08-29T23:35:00+08:00
 categories:
