@@ -121,8 +121,8 @@ dateFormat = "01-02"
 rss = 10
 #  最近更新文章设置
 [section.recentlyUpdated]
-enable = false
-rss = false
+enable = true
+rss = true
 days = 30
 maxCount = 10
 
