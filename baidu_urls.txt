@@ -1,3 +1,4 @@
+https://dilless.github.io/posts/tips/languages/golang/common/
 https://dilless.github.io/posts/blogs/basis/build-your-own-async/
 https://dilless.github.io/posts/notes/networks/web-protocol/geekbang/1-http1-protocol/
 https://dilless.github.io/posts/notes/datastructure_algorithm/zuochengyun/3-binary-tree/
