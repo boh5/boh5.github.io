@@ -1,4 +1,4 @@
-baseURL = "https://dilless.github.io/"
+baseURL = "https://boh5.com/"
 # [en, zh-cn, fr, ...] 设置默认的语言
 defaultContentLanguage = "zh-cn"
 
@@ -11,7 +11,7 @@ theme = "FixIt"
 [author]
 name = "黄波"
 email = ""
-link = "https://dilless.github.io"
+link = "https://boh5.com"
 
 # 网站地图配置
 [sitemap]

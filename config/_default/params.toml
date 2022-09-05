@@ -7,7 +7,7 @@ keywords = ["Blog", "HuangBo", "黄波", "后端", "开发", "学习笔记"]
 # 网站默认主题样式 ("light", "dark", "auto")
 defaultTheme = "auto"
 # 公共 git 仓库路径，仅在 enableGitInfo 设为 true 时有效
-gitRepo = "https://github.com/dilless/dilless.github.io"
+gitRepo = "https://github.com/boh5/boh5.github.io"
 #  哪种哈希函数用来 SRI, 为空时表示不使用 SRI
 # ("sha256", "sha384", "sha512", "md5")
 fingerprint = ""
@@ -167,7 +167,7 @@ paginate = 6
 
 # 作者的社交信息设置
 [social]
-GitHub = "diless"
+GitHub = "boh5"
 Linkedin = ""
 Twitter = ""
 Instagram = ""
@@ -477,7 +477,7 @@ lightgallery = false
 #  Giscus 评论系统设置
 [page.comment.giscus]
 enable = true
-repo = "dilless/dilless.github.io"
+repo = "boh5/boh5.github.io"
 repoId = "R_kgDOHr9Jag"
 category = "Announcements"
 categoryId = "DIC_kwDOHr9Jas4CQ396"
@@ -628,7 +628,7 @@ enable = true
 #  在左上角或者右上角显示 GitHub 开源链接
 [githubCorner]
 enable = true
-permalink = "https://github.com/dilless"
+permalink = "https://github.com/boh5"
 title = "在 GitHub 上找到我"
 position = "right" # left, right
 #  Gravatar 设置
