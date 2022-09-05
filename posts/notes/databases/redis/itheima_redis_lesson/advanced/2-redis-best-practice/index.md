@@ -151,6 +151,6 @@ redis-py:
 
 ---
 
-> 作者: [黄波](https://dilless.github.io)  
-> URL: https://dilless.github.io/posts/notes/databases/redis/itheima_redis_lesson/advanced/2-redis-best-practice/  
+> 作者: [黄波](https://boh5.com)  
+> URL: https://boh5.com/posts/notes/databases/redis/itheima_redis_lesson/advanced/2-redis-best-practice/  
 

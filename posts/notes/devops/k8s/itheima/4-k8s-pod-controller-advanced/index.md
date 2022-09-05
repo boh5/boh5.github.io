@@ -356,6 +356,6 @@ spec: # 详情描述
 
 ---
 
-> 作者: [黄波](https://dilless.github.io)  
-> URL: https://dilless.github.io/posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/  
+> 作者: [黄波](https://boh5.com)  
+> URL: https://boh5.com/posts/notes/devops/k8s/itheima/4-k8s-pod-controller-advanced/  
 

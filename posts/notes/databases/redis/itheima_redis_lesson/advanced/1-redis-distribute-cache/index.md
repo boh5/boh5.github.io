@@ -312,6 +312,6 @@ print(resp)
 
 ---
 
-> 作者: [黄波](https://dilless.github.io)  
-> URL: https://dilless.github.io/posts/notes/databases/redis/itheima_redis_lesson/advanced/1-redis-distribute-cache/  
+> 作者: [黄波](https://boh5.com)  
+> URL: https://boh5.com/posts/notes/databases/redis/itheima_redis_lesson/advanced/1-redis-distribute-cache/  
 

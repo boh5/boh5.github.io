@@ -10,6 +10,6 @@
 
 ---
 
-> 作者: [黄波](https://dilless.github.io)  
-> URL: https://dilless.github.io/posts/notes/devops/docker/imooc/11-docker-cicd-with-git/  
+> 作者: [黄波](https://boh5.com)  
+> URL: https://boh5.com/posts/notes/devops/docker/imooc/11-docker-cicd-with-git/  
 

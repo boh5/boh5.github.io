@@ -220,6 +220,6 @@ spec:
 
 ---
 
-> 作者: [黄波](https://dilless.github.io)  
-> URL: https://dilless.github.io/posts/notes/devops/k8s/itheima/2-k8s-getting-start/  
+> 作者: [黄波](https://boh5.com)  
+> URL: https://boh5.com/posts/notes/devops/k8s/itheima/2-k8s-getting-start/  
 

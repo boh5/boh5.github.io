@@ -1266,6 +1266,6 @@ sched.run()
 
 ---
 
-> 作者: [黄波](https://dilless.github.io)  
-> URL: https://dilless.github.io/posts/blogs/basis/build-your-own-async/  
+> 作者: [黄波](https://boh5.com)  
+> URL: https://boh5.com/posts/blogs/basis/build-your-own-async/  
 

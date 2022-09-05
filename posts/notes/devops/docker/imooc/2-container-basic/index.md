@@ -78,6 +78,6 @@ docker + 管理的对象（比如容器，镜像） + 具体操作（比如创�
 
 ---
 
-> 作者: [黄波](https://dilless.github.io)  
-> URL: https://dilless.github.io/posts/notes/devops/docker/imooc/2-container-basic/  
+> 作者: [黄波](https://boh5.com)  
+> URL: https://boh5.com/posts/notes/devops/docker/imooc/2-container-basic/  
 

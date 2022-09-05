@@ -419,6 +419,6 @@ class ElasticSearchTest:
 
 ---
 
-> 作者: [黄波](https://dilless.github.io)  
-> URL: https://dilless.github.io/posts/notes/databases/elasticsearch/atguigu_elasticsearch_lesson/elasticsearch-basic-usage/  
+> 作者: [黄波](https://boh5.com)  
+> URL: https://boh5.com/posts/notes/databases/elasticsearch/atguigu_elasticsearch_lesson/elasticsearch-basic-usage/  
 

@@ -167,6 +167,6 @@ class Solution:
 
 ---
 
-> 作者: [黄波](https://dilless.github.io)  
-> URL: https://dilless.github.io/posts/notes/datastructure_algorithm/zuochengyun/3-binary-tree/  
+> 作者: [黄波](https://boh5.com)  
+> URL: https://boh5.com/posts/notes/datastructure_algorithm/zuochengyun/3-binary-tree/  
 

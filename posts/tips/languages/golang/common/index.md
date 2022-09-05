@@ -24,6 +24,6 @@ func TestWriteProtobufToBinaryFile(t *testing.T) {
 
 ---
 
-> 作者: [黄波](https://dilless.github.io)  
-> URL: https://dilless.github.io/posts/tips/languages/golang/common/  
+> 作者: [黄波](https://boh5.com)  
+> URL: https://boh5.com/posts/tips/languages/golang/common/  
 
