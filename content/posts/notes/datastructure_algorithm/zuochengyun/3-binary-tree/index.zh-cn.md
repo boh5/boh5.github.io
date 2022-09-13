@@ -1,7 +1,7 @@
 ---
 title: 数据结构和算法学习笔记（三）二叉树
 date: 2022-08-22T20:00:00+08:00
-lastmod: 2022-08-23T00:24:00+08:00
+lastmod: 2022-09-13T22:37:00+08:00
 categories:
   - 学习笔记
   - 数据结构和算法
@@ -173,3 +173,75 @@ class Solution:
 ### 2.5 解题套路
 
 **问子树要信息**(分解成子问题，如上述平衡二叉树判定)，可解决**树型DP**问题
+
+## 3. 二叉树算法题
+
+### 3.1 最近公共祖先
+
+- [x] [剑指 Offer 68 - II. 二叉树的最近公共祖先](https://leetcode.cn/problems/er-cha-shu-de-zui-jin-gong-gong-zu-xian-lcof/)
+
+### 3.2 前驱节点和后继结点
+
+- [ ] [剑指 Offer II 053. 二叉搜索树中的中序后继](https://leetcode.cn/problems/P5rCT8/)
+
+### 3.3 二叉树序列化和反序列化
+
+- [ ] [297. 二叉树的序列化与反序列化](https://leetcode.cn/problems/serialize-and-deserialize-binary-tree/)
+  - [ ] 先序遍历 (With null node)
+  - [ ] 层次遍历 (With null node)
+  - [ ] 先序 + 中序 [重建二叉树](https://leetcode.cn/problems/zhong-jian-er-cha-shu-lcof/)
+
+### 3.4 折纸问题
+
+> 请把纸条竖着放在桌⼦上，然后从纸条的下边向上⽅对折，压出折痕后再展 开。此时有1条折痕，突起的⽅向指向纸条的背⾯，这条折痕叫做“下”折痕 ；突起的⽅向指向纸条正⾯的折痕叫做“上”折痕。如果每次都从下边向上⽅ 对折，对折N次。请从上到下计算出所有折痕的⽅向。
+> 
+> 给定折的次数n,请返回从上到下的折痕的数组，若为下折痕则对应元素为"down",若为上折痕则为"up".
+
+解法：举例、模拟得出数学模型：一颗满二叉树，各个节点直接有规律，中序遍历得结果
+
+> 注意：并不需要真正构建二叉树(空间复杂度: $O(N)$，N 为树得深度)，而构建一个二叉树需要 $O(2 ^ N)$ 的空间
+
+
+`golang` 代码：
+
+```go
+package main
+
+import (
+	"fmt"
+	"io"
+	"log"
+	"strings"
+)
+
+func main() {
+	fmt.Println(origami(3))
+}
+
+func origami(n int) []string {
+	var builder strings.Builder
+	process(1, n, false, &builder)
+	s := builder.String()
+	s = strings.Trim(s, ",")
+	return strings.Split(s, ",")
+}
+
+func process(depth, n int, up bool, writer io.Writer) {
+	if depth > n {
+		return
+	}
+	process(depth+1, n, true, writer)
+
+	s := "UP"
+	if !up {
+		s = "DOWN"
+	}
+
+	_, err := writer.Write([]byte(s + ","))
+	if err != nil {
+		log.Fatal("write sting ans error")
+	}
+
+	process(depth+1, n, false, writer)
+}
+```
