@@ -1,4 +1,4 @@
-<!doctype html><html itemscope itemtype=http://schema.org/WebPage lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=2"><meta name=robots content="noodp"><title>数据结构和算法学习笔记（四）图 - 黄波的博客</title><meta name=author content="黄波"><meta name=author-link content="https://boh5.com"><meta name=description content="1. 图的数据结构 图分为 有向图 和 无向图 图的一种数据结构： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 package graph type Edge struct { Weight int // 权重(距离...) From *Node // 从哪个"><meta name=keywords content="数据结构,算法,图"><meta itemprop=name content="数据结构和算法学习笔记（四）图"><meta itemprop=description content="1. 图的数据结构 图分为 有向图 和 无向图 图的一种数据结构： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 package graph type Edge struct { Weight int // 权重(距离...) From *Node // 从哪个"><meta itemprop=datePublished content="2022-09-13T22:40:00+08:00"><meta itemprop=dateModified content="2022-09-14T00:41:00+08:00"><meta itemprop=wordCount content="770"><meta itemprop=image content="https://boh5.com/posts/notes/datastructure_algorithm/zuochengyun/4-graph/images/features/zh-cn.png"><meta itemprop=keywords content="数据结构,算法,图,"><meta property="og:title" content="数据结构和算法学习笔记（四）图"><meta property="og:description" content="1. 图的数据结构 图分为 有向图 和 无向图 图的一种数据结构： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 package graph type Edge struct { Weight int // 权重(距离...) From *Node // 从哪个"><meta property="og:type" content="article"><meta property="og:url" content="https://boh5.com/posts/notes/datastructure_algorithm/zuochengyun/4-graph/"><meta property="og:image" content="https://boh5.com/posts/notes/datastructure_algorithm/zuochengyun/4-graph/images/features/zh-cn.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2022-09-13T22:40:00+08:00"><meta property="article:modified_time" content="2022-09-14T00:41:00+08:00"><meta property="og:site_name" content="黄波的博客"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://boh5.com/posts/notes/datastructure_algorithm/zuochengyun/4-graph/images/features/zh-cn.png"><meta name=twitter:title content="数据结构和算法学习笔记（四）图"><meta name=twitter:description content="1. 图的数据结构 图分为 有向图 和 无向图 图的一种数据结构： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 package graph type Edge struct { Weight int // 权重(距离...) From *Node // 从哪个"><meta name=application-name content="黄波的博客"><meta name=apple-mobile-web-app-title content="黄波的博客"><meta name=theme-color data-light=#ffffff data-dark=#252627 content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://boh5.com/posts/notes/datastructure_algorithm/zuochengyun/4-graph/><link rel=prev href=https://boh5.com/posts/tips/languages/golang/golang-backend/><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><meta name=google-site-verification content="3_Zf27e0mNtTIsBWn36hi_d4KTxPd2Zh1dsZMVnKK8k"><meta name=baidu-site-verification content="code-VsfDko5mls"><meta name=360-site-verification content="1a8490494ad7f3fe3e0f7e4a61ce0775"><meta name=sogou_site_verification content="2dnMvyemIm"><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"数据结构和算法学习笔记（四）图","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/boh5.com\/posts\/notes\/datastructure_algorithm\/zuochengyun\/4-graph\/"},"image":[{"@type":"ImageObject","url":"https:\/\/boh5.com\/posts\/notes\/datastructure_algorithm\/zuochengyun\/4-graph\/images\/features\/zh-cn.png","width":2560,"height":914}],"genre":"posts","keywords":"数据结构, 算法, 图","wordcount":770,"url":"https:\/\/boh5.com\/posts\/notes\/datastructure_algorithm\/zuochengyun\/4-graph\/","datePublished":"2022-09-13T22:40:00+08:00","dateModified":"2022-09-14T00:41:00+08:00","publisher":{"@type":"Organization","name":""},"author":{"@type":"Person","name":"黄波"},"description":""}</script></head><body data-header-desktop=sticky data-header-mobile=auto><script>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("data-theme","dark")</script><div class=wrapper><header class="desktop animate__faster" id=header-desktop><div class=header-wrapper data-github-corner=right><div class=header-title><a href=/ title=黄波的博客><img class="lazyload logo" src=/svg/loading.min.svg data-src=/apple-touch-icon.png data-srcset="/apple-touch-icon.png, /apple-touch-icon.png 1.5x, /apple-touch-icon.png 2x" data-sizes=auto alt=黄波的博客 title=黄波的博客><span class=header-title-text>黄波的博客</span></a><span class=header-subtitle>开发、学习、生活、技术分享</span></div><nav><ul class=menu><li class=menu-item><a class=menu-link href=/posts/><i class='fa-solid fa-archive fa-fw fa-sm'></i> 文章</a></li><li class=menu-item><a class=menu-link href=/categories/><i class='fa-solid fa-th fa-fw fa-sm'></i> 分类</a></li><li class=menu-item><a class=menu-link href=/tags/><i class='fa-solid fa-tags fa-fw fa-sm'></i> 标签</a></li><li class=menu-item><a class=menu-link href=/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/><i class='fa-solid fa-book fa-fw fa-sm'></i> 学习笔记</a></li><li class=menu-item><a class=menu-link href=/about/><i class='fa-solid fa-info-circle fa-fw fa-sm'></i> 关于</a></li><li class="menu-item delimiter"></li><li class="menu-item language"><span role=button aria-label=选择语言 title=选择语言>简体中文<i class="dropdown-icon fa-solid fa-chevron-down" aria-hidden=true></i></span><ul class=sub-menu><li class=menu-item>没有更多翻译</li></ul></li><li class="menu-item search" id=search-desktop><input type=text placeholder="搜索文章标题或内容 ..." id=search-input-desktop>
+<!doctype html><html itemscope itemtype=http://schema.org/WebPage lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=2"><meta name=robots content="noodp"><title>数据结构和算法学习笔记（四）图 - 黄波的博客</title><meta name=author content="黄波"><meta name=author-link content="https://boh5.com"><meta name=description content="1. 图的数据结构 图分为 有向图 和 无向图 图的一种数据结构： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 package graph type Edge struct { Weight int // 权重(距离...) From *Node // 从哪个"><meta name=keywords content="数据结构,算法,图"><meta itemprop=name content="数据结构和算法学习笔记（四）图"><meta itemprop=description content="1. 图的数据结构 图分为 有向图 和 无向图 图的一种数据结构： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 package graph type Edge struct { Weight int // 权重(距离...) From *Node // 从哪个"><meta itemprop=datePublished content="2022-09-13T22:40:00+08:00"><meta itemprop=dateModified content="2022-09-14T13:43:00+08:00"><meta itemprop=wordCount content="2341"><meta itemprop=image content="https://boh5.com/posts/notes/datastructure_algorithm/zuochengyun/4-graph/images/features/zh-cn.png"><meta itemprop=keywords content="数据结构,算法,图,"><meta property="og:title" content="数据结构和算法学习笔记（四）图"><meta property="og:description" content="1. 图的数据结构 图分为 有向图 和 无向图 图的一种数据结构： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 package graph type Edge struct { Weight int // 权重(距离...) From *Node // 从哪个"><meta property="og:type" content="article"><meta property="og:url" content="https://boh5.com/posts/notes/datastructure_algorithm/zuochengyun/4-graph/"><meta property="og:image" content="https://boh5.com/posts/notes/datastructure_algorithm/zuochengyun/4-graph/images/features/zh-cn.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2022-09-13T22:40:00+08:00"><meta property="article:modified_time" content="2022-09-14T13:43:00+08:00"><meta property="og:site_name" content="黄波的博客"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://boh5.com/posts/notes/datastructure_algorithm/zuochengyun/4-graph/images/features/zh-cn.png"><meta name=twitter:title content="数据结构和算法学习笔记（四）图"><meta name=twitter:description content="1. 图的数据结构 图分为 有向图 和 无向图 图的一种数据结构： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 package graph type Edge struct { Weight int // 权重(距离...) From *Node // 从哪个"><meta name=application-name content="黄波的博客"><meta name=apple-mobile-web-app-title content="黄波的博客"><meta name=theme-color data-light=#ffffff data-dark=#252627 content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://boh5.com/posts/notes/datastructure_algorithm/zuochengyun/4-graph/><link rel=prev href=https://boh5.com/posts/tips/languages/golang/golang-backend/><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><meta name=google-site-verification content="3_Zf27e0mNtTIsBWn36hi_d4KTxPd2Zh1dsZMVnKK8k"><meta name=baidu-site-verification content="code-VsfDko5mls"><meta name=360-site-verification content="1a8490494ad7f3fe3e0f7e4a61ce0775"><meta name=sogou_site_verification content="2dnMvyemIm"><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"数据结构和算法学习笔记（四）图","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/boh5.com\/posts\/notes\/datastructure_algorithm\/zuochengyun\/4-graph\/"},"image":[{"@type":"ImageObject","url":"https:\/\/boh5.com\/posts\/notes\/datastructure_algorithm\/zuochengyun\/4-graph\/images\/features\/zh-cn.png","width":2560,"height":914}],"genre":"posts","keywords":"数据结构, 算法, 图","wordcount":2341,"url":"https:\/\/boh5.com\/posts\/notes\/datastructure_algorithm\/zuochengyun\/4-graph\/","datePublished":"2022-09-13T22:40:00+08:00","dateModified":"2022-09-14T13:43:00+08:00","publisher":{"@type":"Organization","name":""},"author":{"@type":"Person","name":"黄波"},"description":""}</script></head><body data-header-desktop=sticky data-header-mobile=auto><script>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("data-theme","dark")</script><div class=wrapper><header class="desktop animate__faster" id=header-desktop><div class=header-wrapper data-github-corner=right><div class=header-title><a href=/ title=黄波的博客><img class="lazyload logo" src=/svg/loading.min.svg data-src=/apple-touch-icon.png data-srcset="/apple-touch-icon.png, /apple-touch-icon.png 1.5x, /apple-touch-icon.png 2x" data-sizes=auto alt=黄波的博客 title=黄波的博客><span class=header-title-text>黄波的博客</span></a><span class=header-subtitle>开发、学习、生活、技术分享</span></div><nav><ul class=menu><li class=menu-item><a class=menu-link href=/posts/><i class='fa-solid fa-archive fa-fw fa-sm'></i> 文章</a></li><li class=menu-item><a class=menu-link href=/categories/><i class='fa-solid fa-th fa-fw fa-sm'></i> 分类</a></li><li class=menu-item><a class=menu-link href=/tags/><i class='fa-solid fa-tags fa-fw fa-sm'></i> 标签</a></li><li class=menu-item><a class=menu-link href=/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/><i class='fa-solid fa-book fa-fw fa-sm'></i> 学习笔记</a></li><li class=menu-item><a class=menu-link href=/about/><i class='fa-solid fa-info-circle fa-fw fa-sm'></i> 关于</a></li><li class="menu-item delimiter"></li><li class="menu-item language"><span role=button aria-label=选择语言 title=选择语言>简体中文<i class="dropdown-icon fa-solid fa-chevron-down" aria-hidden=true></i></span><ul class=sub-menu><li class=menu-item>没有更多翻译</li></ul></li><li class="menu-item search" id=search-desktop><input type=text placeholder="搜索文章标题或内容 ..." id=search-input-desktop>
 <a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fa-solid fa-search fa-fw" aria-hidden=true></i></a>
 <a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fa-solid fa-times-circle fa-fw" aria-hidden=true></i></a>
 <span class="search-button search-loading" id=search-loading-desktop><i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden=true></i></span></li><li class="menu-item theme-switch" title=切换主题><i class="fa-solid fa-adjust fa-fw" aria-hidden=true></i></li></ul></nav></div></header><header class="mobile animate__faster" id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=黄波的博客><img class="lazyload logo" src=/svg/loading.min.svg data-src=/apple-touch-icon.png data-srcset="/apple-touch-icon.png, /apple-touch-icon.png 1.5x, /apple-touch-icon.png 2x" data-sizes=auto alt=/apple-touch-icon.png title=/apple-touch-icon.png><span class=header-title-text>黄波的博客</span></a><span class=header-subtitle>开发、学习、生活、技术分享</span></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><nav><ul class=menu id=menu-mobile><li class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder="搜索文章标题或内容 ..." id=search-input-mobile>
@@ -7,10 +7,10 @@
 <span class="search-button search-loading" id=search-loading-mobile><i class="fa-solid fa-spinner fa-fw fa-spin" aria-hidden=true></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></li><li class=menu-item><a class=menu-link href=/posts/><i class='fa-solid fa-archive fa-fw fa-sm'></i> 文章</a></li><li class=menu-item><a class=menu-link href=/categories/><i class='fa-solid fa-th fa-fw fa-sm'></i> 分类</a></li><li class=menu-item><a class=menu-link href=/tags/><i class='fa-solid fa-tags fa-fw fa-sm'></i> 标签</a></li><li class=menu-item><a class=menu-link href=/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/><i class='fa-solid fa-book fa-fw fa-sm'></i> 学习笔记</a></li><li class=menu-item><a class=menu-link href=/about/><i class='fa-solid fa-info-circle fa-fw fa-sm'></i> 关于</a></li><li class="menu-item theme-switch" title=切换主题><i class="fa-solid fa-adjust fa-fw" aria-hidden=true></i></li><li class="menu-item language"><span role=button aria-label=选择语言 title=选择语言>简体中文<i class="dropdown-icon fa-solid fa-chevron-down" aria-hidden=true></i></span>
 <select class=language-select onchange="location=this.value"><option disabled>没有更多翻译</option></select></li></ul></nav></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=container data-page-style=normal><aside class=toc id=toc-auto><h2 class=toc-title>目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden=true></i></h2><div class=toc-content id=toc-content-auto></div></aside><aside class=aside-custom></aside><article class="page single"><div class=header><h1 class="single-title animate__animated animate__flipInX"><span>数据结构和算法学习笔记（四）图</span></h1></div><div class=post-meta><div class=post-meta-line><span class=post-author><a href=https://boh5.com title=作者 target=_blank rel="external nofollow noopener noreferrer author" class=author><i class="fa-solid fa-user-circle" aria-hidden=true></i>
 黄波</a></span>
-<span class=post-category>收录于 <a href=/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/><i class="fa-regular fa-folder fa-fw" aria-hidden=true></i> 学习笔记</a>&ensp;<a href=/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E7%AE%97%E6%B3%95/><i class="fa-regular fa-folder fa-fw" aria-hidden=true></i> 数据结构和算法</a></span></div><div class=post-meta-line><span title="2022-09-13 22:40:00"><i class="fa-regular fa-calendar-alt fa-fw" aria-hidden=true></i>&nbsp;<time datetime=2022-09-13>2022-09-13</time></span>&nbsp;<span><i class="fa-solid fa-pencil-alt fa-fw" aria-hidden=true></i> 约 770 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw" aria-hidden=true></i> 预计阅读 2 分钟</span>&nbsp;<span id=busuanzi_container_page_pv class="busuanzi_visitors comment-visitors" data-flag-title=数据结构和算法学习笔记（四）图>
+<span class=post-category>收录于 <a href=/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/><i class="fa-regular fa-folder fa-fw" aria-hidden=true></i> 学习笔记</a>&ensp;<a href=/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E7%AE%97%E6%B3%95/><i class="fa-regular fa-folder fa-fw" aria-hidden=true></i> 数据结构和算法</a></span></div><div class=post-meta-line><span title="2022-09-13 22:40:00"><i class="fa-regular fa-calendar-alt fa-fw" aria-hidden=true></i>&nbsp;<time datetime=2022-09-13>2022-09-13</time></span>&nbsp;<span><i class="fa-solid fa-pencil-alt fa-fw" aria-hidden=true></i> 约 2341 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw" aria-hidden=true></i> 预计阅读 5 分钟</span>&nbsp;<span id=busuanzi_container_page_pv class="busuanzi_visitors comment-visitors" data-flag-title=数据结构和算法学习笔记（四）图>
 <i class="fa-regular fa-eye fa-fw" aria-hidden=true></i>&nbsp;<span id=busuanzi_value_page_pv>-</span>&nbsp;次阅读
 </span>&nbsp;</div></div><div class=featured-image><img class=lazyload src=/svg/loading.min.svg data-src=/posts/notes/datastructure_algorithm/zuochengyun/4-graph/images/features/zh-cn.png data-srcset="/posts/notes/datastructure_algorithm/zuochengyun/4-graph/images/features/zh-cn.png, /posts/notes/datastructure_algorithm/zuochengyun/4-graph/images/features/zh-cn.png 1.5x, /posts/notes/datastructure_algorithm/zuochengyun/4-graph/images/features/zh-cn.png 2x" data-sizes=auto alt=/posts/notes/datastructure_algorithm/zuochengyun/4-graph/images/features/zh-cn.png title=/posts/notes/datastructure_algorithm/zuochengyun/4-graph/images/features/zh-cn.png></div><div class="details toc" id=toc-static data-kept=false><div class="details-summary toc-title"><span>目录</span>
-<span><i class="details-icon fa-solid fa-angle-right" aria-hidden=true></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#1-图的数据结构>1. 图的数据结构</a><ul><li><a href=#11-邻接表>1.1 邻接表</a></li><li><a href=#12-邻接矩阵>1.2 邻接矩阵</a></li></ul></li><li><a href=#2-图的遍历>2. 图的遍历</a><ul><li><a href=#21-广度优先遍历>2.1 广度优先遍历</a></li><li><a href=#22-深度优先遍历>2.2 深度优先遍历</a></li></ul></li><li><a href=#3-拓扑排序算法>3. 拓扑排序算法</a></li></ul></nav></div></div><div class=content id=content><h2 id=1-图的数据结构>1. 图的数据结构</h2><ul><li>图分为 <code>有向图</code> 和 <code>无向图</code></li></ul><p><strong>图的一种数据结构</strong>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+<span><i class="details-icon fa-solid fa-angle-right" aria-hidden=true></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#1-图的数据结构>1. 图的数据结构</a><ul><li><a href=#11-邻接表>1.1 邻接表</a></li><li><a href=#12-邻接矩阵>1.2 邻接矩阵</a></li></ul></li><li><a href=#2-图的遍历>2. 图的遍历</a><ul><li><a href=#21-广度优先遍历>2.1 广度优先遍历</a></li><li><a href=#22-深度优先遍历>2.2 深度优先遍历</a></li></ul></li><li><a href=#3-拓扑排序算法>3. 拓扑排序算法</a></li><li><a href=#3-kruskal算法和-prim算法>3. kruskal算法和 prim算法</a><ul><li><a href=#31-最小生成树>3.1 最小生成树</a></li><li><a href=#32-kruskal算法>3.2 kruskal算法</a></li><li><a href=#33-prim-算法>3.3 prim 算法</a></li><li><a href=#34-kruskal算法-vs-prim算法>3.4 kruskal算法 VS prim算法</a></li></ul></li><li><a href=#4-dijkstra-算法>4. Dijkstra 算法</a></li></ul></nav></div></div><div class=content id=content><h2 id=1-图的数据结构>1. 图的数据结构</h2><ul><li>图分为 <code>有向图</code> 和 <code>无向图</code></li></ul><p><strong>图的一种数据结构</strong>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -230,7 +230,297 @@
 </span></span><span class=line><span class=cl>	<span class=p>}</span>
 </span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=nx>rtn</span>
 </span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></td></tr></table></div></div></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span title="2022-09-14 00:41:00">更新于 2022-09-14&nbsp;</span></div><div class=post-info-license><span><a rel="license external nofollow noopener noreferrer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div><div class=post-info-line><div class=post-info-md><span><a href=/posts/notes/datastructure_algorithm/zuochengyun/4-graph/index.md title=阅读原始文档 class=link-to-markdown>阅读原始文档</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://boh5.com/posts/notes/datastructure_algorithm/zuochengyun/4-graph/ data-title=数据结构和算法学习笔记（四）图 data-hashtags=数据结构,算法,图><i class="fa-brands fa-twitter fa-fw" aria-hidden=true></i></a>
+</span></span></code></pre></td></tr></table></div></div><h2 id=3-kruskal算法和-prim算法>3. kruskal算法和 prim算法</h2><p><strong>只适用于无向图</strong></p><h3 id=31-最小生成树>3.1 最小生成树</h3><blockquote><p><a href=https://zh.m.wikipedia.org/zh-hans/%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91 target=_blank rel="external nofollow noopener noreferrer">维基百科<i class="fa-solid fa-external-link-alt fa-fw fa-xs ms-1 text-secondary" aria-hidden=true></i></a></p><p>最小生成树是一副连通加权无向图中一棵权值最小的生成树。</p><p>最小生成树其实是最小权重生成树的简称。</p></blockquote><h3 id=32-kruskal算法>3.2 kruskal算法</h3><blockquote><p>从边的角度考虑这件事</p></blockquote><p><strong>算法</strong></p><ol><li>找到权重最小的边，加入树中</li><li>选取剩余的边中权重最小的边<ul><li>如果会形成环，跳过</li><li>如果不会形成环，加入树中</li></ul></li><li>循环第 2 步，直到遍历完所有的边</li></ol><p><strong>关键问题</strong>在于如何判断加入一个边是否会形成环，采用<strong>并查集</strong>解决</p><p><strong>并查集算法</strong></p><ol><li>一开始每个 node 都是单独的集合</li><li>每次选中最小边时，判断边的两个 node 是否是同一个集合：<ul><li>是：跳过</li><li>不是：加入这条边，两个 node 的集合合并</li></ul></li></ol><p><strong>Golang实现</strong>:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kn>package</span> <span class=nx>graph</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=p>(</span>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;container/heap&#34;</span>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;reflect&#34;</span>
+</span></span><span class=line><span class=cl><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// TODO: Test
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl><span class=c1>// UnionFinder 定义并查集算法
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>type</span> <span class=nx>UnionFinder</span> <span class=kd>interface</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nf>IsSameSet</span><span class=p>(</span><span class=nx>from</span><span class=p>,</span> <span class=nx>to</span> <span class=o>*</span><span class=nx>Node</span><span class=p>)</span> <span class=kt>bool</span>
+</span></span><span class=line><span class=cl>	<span class=nf>Union</span><span class=p>(</span><span class=nx>from</span><span class=p>,</span> <span class=nx>to</span> <span class=o>*</span><span class=nx>Node</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// MySets 简单实现类似并查集的算法
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>type</span> <span class=nx>MySets</span> <span class=kd>struct</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nx>SetMap</span> <span class=kd>map</span><span class=p>[</span><span class=o>*</span><span class=nx>Node</span><span class=p>][]</span><span class=o>*</span><span class=nx>Node</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>NewMySets</span><span class=p>(</span><span class=nx>nodes</span> <span class=p>[]</span><span class=o>*</span><span class=nx>Node</span><span class=p>)</span> <span class=o>*</span><span class=nx>MySets</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nx>mySets</span> <span class=o>:=</span> <span class=nb>new</span><span class=p>(</span><span class=nx>MySets</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=k>for</span> <span class=nx>_</span><span class=p>,</span> <span class=nx>node</span> <span class=o>:=</span> <span class=k>range</span> <span class=nx>nodes</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>mySets</span><span class=p>.</span><span class=nx>SetMap</span><span class=p>[</span><span class=nx>node</span><span class=p>]</span> <span class=p>=</span> <span class=p>[]</span><span class=o>*</span><span class=nx>Node</span><span class=p>{</span><span class=nx>node</span><span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=nx>mySets</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// IsSameSet 判断两个 node 对应的 set 是否相同
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>func</span> <span class=p>(</span><span class=nx>s</span> <span class=o>*</span><span class=nx>MySets</span><span class=p>)</span> <span class=nf>IsSameSet</span><span class=p>(</span><span class=nx>from</span><span class=p>,</span> <span class=nx>to</span> <span class=o>*</span><span class=nx>Node</span><span class=p>)</span> <span class=kt>bool</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nx>fromSet</span> <span class=o>:=</span> <span class=nx>s</span><span class=p>.</span><span class=nx>SetMap</span><span class=p>[</span><span class=nx>from</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>	<span class=nx>toSet</span> <span class=o>:=</span> <span class=nx>s</span><span class=p>.</span><span class=nx>SetMap</span><span class=p>[</span><span class=nx>to</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=nx>reflect</span><span class=p>.</span><span class=nf>DeepEqual</span><span class=p>(</span><span class=nx>fromSet</span><span class=p>,</span> <span class=nx>toSet</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// Union 合并两个 node 对应的 set
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>func</span> <span class=p>(</span><span class=nx>s</span> <span class=o>*</span><span class=nx>MySets</span><span class=p>)</span> <span class=nf>Union</span><span class=p>(</span><span class=nx>from</span><span class=p>,</span> <span class=nx>to</span> <span class=o>*</span><span class=nx>Node</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nx>fromSet</span> <span class=o>:=</span> <span class=nx>s</span><span class=p>.</span><span class=nx>SetMap</span><span class=p>[</span><span class=nx>from</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>	<span class=nx>toSet</span> <span class=o>:=</span> <span class=nx>s</span><span class=p>.</span><span class=nx>SetMap</span><span class=p>[</span><span class=nx>to</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=k>for</span> <span class=nx>_</span><span class=p>,</span> <span class=nx>node</span> <span class=o>:=</span> <span class=k>range</span> <span class=nx>toSet</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>fromSet</span> <span class=p>=</span> <span class=nb>append</span><span class=p>(</span><span class=nx>fromSet</span><span class=p>,</span> <span class=nx>node</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=nx>s</span><span class=p>.</span><span class=nx>SetMap</span><span class=p>[</span><span class=nx>node</span><span class=p>]</span> <span class=p>=</span> <span class=nx>fromSet</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// A EdgeHeap implements heap.Interface and holds Edge.
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>type</span> <span class=nx>EdgeHeap</span> <span class=p>[]</span><span class=o>*</span><span class=nx>Edge</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=p>(</span><span class=nx>pq</span> <span class=nx>EdgeHeap</span><span class=p>)</span> <span class=nf>Len</span><span class=p>()</span> <span class=kt>int</span> <span class=p>{</span> <span class=k>return</span> <span class=nb>len</span><span class=p>(</span><span class=nx>pq</span><span class=p>)</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=p>(</span><span class=nx>pq</span> <span class=nx>EdgeHeap</span><span class=p>)</span> <span class=nf>Less</span><span class=p>(</span><span class=nx>i</span><span class=p>,</span> <span class=nx>j</span> <span class=kt>int</span><span class=p>)</span> <span class=kt>bool</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=c1>// We want Pop to give us the lowest
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=k>return</span> <span class=nx>pq</span><span class=p>[</span><span class=nx>i</span><span class=p>].</span><span class=nx>Weight</span> <span class=p>&lt;</span> <span class=nx>pq</span><span class=p>[</span><span class=nx>j</span><span class=p>].</span><span class=nx>Weight</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=p>(</span><span class=nx>pq</span> <span class=nx>EdgeHeap</span><span class=p>)</span> <span class=nf>Swap</span><span class=p>(</span><span class=nx>i</span><span class=p>,</span> <span class=nx>j</span> <span class=kt>int</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nx>pq</span><span class=p>[</span><span class=nx>i</span><span class=p>],</span> <span class=nx>pq</span><span class=p>[</span><span class=nx>j</span><span class=p>]</span> <span class=p>=</span> <span class=nx>pq</span><span class=p>[</span><span class=nx>j</span><span class=p>],</span> <span class=nx>pq</span><span class=p>[</span><span class=nx>i</span><span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=p>(</span><span class=nx>pq</span> <span class=o>*</span><span class=nx>EdgeHeap</span><span class=p>)</span> <span class=nf>Push</span><span class=p>(</span><span class=nx>edge</span> <span class=nx>any</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nx>item</span> <span class=o>:=</span> <span class=nx>edge</span><span class=p>.(</span><span class=o>*</span><span class=nx>Edge</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=o>*</span><span class=nx>pq</span> <span class=p>=</span> <span class=nb>append</span><span class=p>(</span><span class=o>*</span><span class=nx>pq</span><span class=p>,</span> <span class=nx>item</span><span class=p>)</span> <span class=c1>// 必须传指针，否则 append 新开辟内存，导致 push 失效
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=p>(</span><span class=nx>pq</span> <span class=o>*</span><span class=nx>EdgeHeap</span><span class=p>)</span> <span class=nf>Pop</span><span class=p>()</span> <span class=nx>any</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nx>old</span> <span class=o>:=</span> <span class=o>*</span><span class=nx>pq</span>
+</span></span><span class=line><span class=cl>	<span class=nx>n</span> <span class=o>:=</span> <span class=nb>len</span><span class=p>(</span><span class=nx>old</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=nx>edge</span> <span class=o>:=</span> <span class=nx>old</span><span class=p>[</span><span class=nx>n</span><span class=o>-</span><span class=mi>1</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>	<span class=nx>old</span><span class=p>[</span><span class=nx>n</span><span class=o>-</span><span class=mi>1</span><span class=p>]</span> <span class=p>=</span> <span class=kc>nil</span> <span class=c1>// avoid memory leak
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=o>*</span><span class=nx>pq</span> <span class=p>=</span> <span class=nx>old</span><span class=p>[</span><span class=mi>0</span> <span class=p>:</span> <span class=nx>n</span><span class=o>-</span><span class=mi>1</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=nx>edge</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// Kruskal 实现最小生成树算法
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>func</span> <span class=nf>Kruskal</span><span class=p>(</span><span class=nx>graph</span> <span class=o>*</span><span class=nx>Graph</span><span class=p>,</span> <span class=nx>newFinderFunc</span> <span class=kd>func</span><span class=p>(</span><span class=nx>nodes</span> <span class=p>[]</span><span class=o>*</span><span class=nx>Node</span><span class=p>)</span> <span class=nx>UnionFinder</span><span class=p>)</span> <span class=p>[]</span><span class=o>*</span><span class=nx>Edge</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nx>nodes</span> <span class=o>:=</span> <span class=nb>make</span><span class=p>([]</span><span class=o>*</span><span class=nx>Node</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=nb>len</span><span class=p>(</span><span class=nx>graph</span><span class=p>.</span><span class=nx>Nodes</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>	<span class=k>for</span> <span class=nx>_</span><span class=p>,</span> <span class=nx>node</span> <span class=o>:=</span> <span class=k>range</span> <span class=nx>graph</span><span class=p>.</span><span class=nx>Nodes</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>nodes</span> <span class=p>=</span> <span class=nb>append</span><span class=p>(</span><span class=nx>nodes</span><span class=p>,</span> <span class=nx>node</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=nx>finder</span> <span class=o>:=</span> <span class=nf>newFinderFunc</span><span class=p>(</span><span class=nx>nodes</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=nx>edgeHeap</span> <span class=o>:=</span> <span class=nb>make</span><span class=p>(</span><span class=nx>EdgeHeap</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=nb>len</span><span class=p>(</span><span class=nx>graph</span><span class=p>.</span><span class=nx>Edges</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>	<span class=k>for</span> <span class=nx>edge</span> <span class=o>:=</span> <span class=k>range</span> <span class=nx>graph</span><span class=p>.</span><span class=nx>Edges</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>edgeHeap</span> <span class=p>=</span> <span class=nb>append</span><span class=p>(</span><span class=nx>edgeHeap</span><span class=p>,</span> <span class=nx>edge</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=nx>heap</span><span class=p>.</span><span class=nf>Init</span><span class=p>(</span><span class=o>&amp;</span><span class=nx>edgeHeap</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=nx>result</span> <span class=o>:=</span> <span class=nb>make</span><span class=p>([]</span><span class=o>*</span><span class=nx>Edge</span><span class=p>,</span> <span class=mi>0</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=k>for</span> <span class=nx>edgeHeap</span><span class=p>.</span><span class=nf>Len</span><span class=p>()</span> <span class=p>&gt;</span> <span class=mi>0</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>item</span> <span class=o>:=</span> <span class=nx>edgeHeap</span><span class=p>.</span><span class=nf>Pop</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>		<span class=nx>edge</span> <span class=o>:=</span> <span class=nx>item</span><span class=p>.(</span><span class=o>*</span><span class=nx>Edge</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=k>if</span> <span class=p>!</span><span class=nx>finder</span><span class=p>.</span><span class=nf>IsSameSet</span><span class=p>(</span><span class=nx>edge</span><span class=p>.</span><span class=nx>From</span><span class=p>,</span> <span class=nx>edge</span><span class=p>.</span><span class=nx>To</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=nx>result</span> <span class=p>=</span> <span class=nb>append</span><span class=p>(</span><span class=nx>result</span><span class=p>,</span> <span class=nx>edge</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>			<span class=nx>finder</span><span class=p>.</span><span class=nf>Union</span><span class=p>(</span><span class=nx>edge</span><span class=p>.</span><span class=nx>From</span><span class=p>,</span> <span class=nx>edge</span><span class=p>.</span><span class=nx>To</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=nx>result</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=33-prim-算法>3.3 prim 算法</h3><blockquote><p>从点的角度考虑</p></blockquote><p><strong>算法</strong></p><ol><li>初始化：所有的 edge 都没解锁</li><li>从任意 node 开始，解锁相关所有边</li><li>在解锁的边中找出最小的 edge：<ul><li>如果另一个 node 还没考察过，则将 edge 放入结果集</li><li>否则，排除这条 edge，回到第 3 步</li></ul></li><li>将解锁的 edge 的另一个 node 的所有 edge 解锁</li><li>重复第 3 步</li></ol><h3 id=34-kruskal算法-vs-prim算法>3.4 kruskal算法 VS prim算法</h3><ul><li>K 算法从边考虑，可能形成几片连接的树最后才连起来，因此需要并查集来考虑合并问题</li><li>P 算法从点考虑，从某个点出发依次连接各个点(因为每次考虑的边都靠解锁的方式和已加入结果的点相连，不可能存在多片独立的树)，不存在上述问题</li></ul><h2 id=4-dijkstra-算法>4. Dijkstra 算法</h2><blockquote><p>是从一个顶点到其余各顶点的最短路径算法，解决的是有权图中最短路径问题</p><p>要求边的权重不能为负，更准确是：不能有累加和为负数的环，否则一直在环上绕就会越来越小</p></blockquote><p><strong>算法</strong>:</p><ol><li>一开始从 A 出发记录 A 到各个点的距离，最开始为 [0, INF, INF, &mldr;]，0 表示 A 到 A 的距离</li><li>每次选中距离最小的点，最开始选中 A，如果从 A 发出到其他点的距离会缩小，那么更新距离，完成后锁定当前距离，不再更新：<ul><li>如 A 到 B 距离为 3，A 和 其他点都不相连，那么数组变成 [0, 3, INF, &mldr;]，锁定 0 这个位置，不再更新</li></ul></li><li>重复 2，直到全部锁定，即为 A 到各个点的最小路径</li></ol><p><strong>Golang</strong>实现：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kn>package</span> <span class=nx>graph</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=s>&#34;math&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>Dijkstra</span><span class=p>(</span><span class=nx>head</span> <span class=o>*</span><span class=nx>Node</span><span class=p>)</span> <span class=kd>map</span><span class=p>[</span><span class=o>*</span><span class=nx>Node</span><span class=p>]</span><span class=kt>int</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=c1>// distanceMap 记录从 head 出发到各个 node，目前发现的最小距离
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>// key 表示从 head 出发到达 key
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>// value 表示从 head 出发到达 key 的最小距离
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>// 如果没有 node 不在 distanceMap 中，表示距离为正无穷
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=nx>distanceMap</span> <span class=o>:=</span> <span class=nb>make</span><span class=p>(</span><span class=kd>map</span><span class=p>[</span><span class=o>*</span><span class=nx>Node</span><span class=p>]</span><span class=kt>int</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=nx>distanceMap</span><span class=p>[</span><span class=nx>head</span><span class=p>]</span> <span class=p>=</span> <span class=mi>0</span> <span class=c1>// head 到 head 距离为 0
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl>	<span class=c1>// selectedNode 储存已锁定(已经选择过)的节点
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=nx>selectedNodes</span> <span class=o>:=</span> <span class=nb>make</span><span class=p>(</span><span class=kd>map</span><span class=p>[</span><span class=o>*</span><span class=nx>Node</span><span class=p>]</span><span class=nx>any</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=nx>minNode</span> <span class=o>:=</span> <span class=nf>getMinDistanceAndUnselectedNode</span><span class=p>(</span><span class=nx>distanceMap</span><span class=p>,</span> <span class=nx>selectedNodes</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=k>for</span> <span class=nx>minNode</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>preDistance</span> <span class=o>:=</span> <span class=nx>distanceMap</span><span class=p>[</span><span class=nx>minNode</span><span class=p>]</span> <span class=c1>// 当前节点到 head 的距离
+</span></span></span><span class=line><span class=cl><span class=c1></span>		<span class=k>for</span> <span class=nx>_</span><span class=p>,</span> <span class=nx>edge</span> <span class=o>:=</span> <span class=k>range</span> <span class=nx>minNode</span><span class=p>.</span><span class=nx>Edges</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=nx>toNode</span> <span class=o>:=</span> <span class=nx>edge</span><span class=p>.</span><span class=nx>To</span>
+</span></span><span class=line><span class=cl>			<span class=c1>// distanceMap 中没出现过，说明是正无穷，说明当前距离一定更小，因此更新距离
+</span></span></span><span class=line><span class=cl><span class=c1></span>			<span class=k>if</span> <span class=nx>_</span><span class=p>,</span> <span class=nx>ok</span> <span class=o>:=</span> <span class=nx>distanceMap</span><span class=p>[</span><span class=nx>toNode</span><span class=p>];</span> <span class=nx>ok</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>				<span class=nx>distanceMap</span><span class=p>[</span><span class=nx>toNode</span><span class=p>]</span> <span class=p>=</span> <span class=nx>preDistance</span> <span class=o>+</span> <span class=nx>edge</span><span class=p>.</span><span class=nx>Weight</span>
+</span></span><span class=line><span class=cl>			<span class=p>}</span>
+</span></span><span class=line><span class=cl>			<span class=c1>// 已记录的距离，和从当前节点过去的距离，哪个更小就要哪个
+</span></span></span><span class=line><span class=cl><span class=c1></span>			<span class=nx>distanceMap</span><span class=p>[</span><span class=nx>toNode</span><span class=p>]</span> <span class=p>=</span> <span class=nb>int</span><span class=p>(</span><span class=nx>math</span><span class=p>.</span><span class=nf>Min</span><span class=p>(</span><span class=nb>float64</span><span class=p>(</span><span class=nx>distanceMap</span><span class=p>[</span><span class=nx>toNode</span><span class=p>]),</span> <span class=nb>float64</span><span class=p>(</span><span class=nx>preDistance</span><span class=o>+</span><span class=nx>edge</span><span class=p>.</span><span class=nx>Weight</span><span class=p>)))</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>		<span class=nx>selectedNodes</span><span class=p>[</span><span class=nx>minNode</span><span class=p>]</span> <span class=p>=</span> <span class=kc>nil</span> <span class=c1>// 当前节点加入锁定 map
+</span></span></span><span class=line><span class=cl><span class=c1></span>		<span class=nx>minNode</span> <span class=p>=</span> <span class=nf>getMinDistanceAndUnselectedNode</span><span class=p>(</span><span class=nx>distanceMap</span><span class=p>,</span> <span class=nx>selectedNodes</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=nx>distanceMap</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// getMinDistanceAndUnselectedNode 返回未被选择过的最小距离节点
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>func</span> <span class=nf>getMinDistanceAndUnselectedNode</span><span class=p>(</span><span class=nx>distanceMap</span> <span class=kd>map</span><span class=p>[</span><span class=o>*</span><span class=nx>Node</span><span class=p>]</span><span class=kt>int</span><span class=p>,</span> <span class=nx>selectedNodes</span> <span class=kd>map</span><span class=p>[</span><span class=o>*</span><span class=nx>Node</span><span class=p>]</span><span class=nx>any</span><span class=p>)</span> <span class=o>*</span><span class=nx>Node</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=kd>var</span> <span class=nx>minNode</span> <span class=o>*</span><span class=nx>Node</span>
+</span></span><span class=line><span class=cl>	<span class=nx>minDistance</span> <span class=o>:=</span> <span class=nx>math</span><span class=p>.</span><span class=nx>MaxInt</span>
+</span></span><span class=line><span class=cl>	<span class=k>for</span> <span class=nx>node</span><span class=p>,</span> <span class=nx>distance</span> <span class=o>:=</span> <span class=k>range</span> <span class=nx>distanceMap</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=k>if</span> <span class=nx>_</span><span class=p>,</span> <span class=nx>ok</span> <span class=o>:=</span> <span class=nx>selectedNodes</span><span class=p>[</span><span class=nx>node</span><span class=p>];</span> <span class=p>!</span><span class=nx>ok</span> <span class=o>&amp;&amp;</span> <span class=nx>distance</span> <span class=p>&lt;</span> <span class=nx>minDistance</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=nx>minNode</span> <span class=p>=</span> <span class=nx>node</span>
+</span></span><span class=line><span class=cl>			<span class=nx>minDistance</span> <span class=p>=</span> <span class=nx>distance</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=nx>minNode</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span title="2022-09-14 13:43:00">更新于 2022-09-14&nbsp;</span></div><div class=post-info-license><span><a rel="license external nofollow noopener noreferrer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div><div class=post-info-line><div class=post-info-md><span><a href=/posts/notes/datastructure_algorithm/zuochengyun/4-graph/index.md title=阅读原始文档 class=link-to-markdown>阅读原始文档</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://boh5.com/posts/notes/datastructure_algorithm/zuochengyun/4-graph/ data-title=数据结构和算法学习笔记（四）图 data-hashtags=数据结构,算法,图><i class="fa-brands fa-twitter fa-fw" aria-hidden=true></i></a>
 <a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://boh5.com/posts/notes/datastructure_algorithm/zuochengyun/4-graph/ data-hashtag=数据结构><i class="fa-brands fa-facebook-square fa-fw" aria-hidden=true></i></a>
 <a href=javascript:void(0); title="分享到 WhatsApp" data-sharer=whatsapp data-url=https://boh5.com/posts/notes/datastructure_algorithm/zuochengyun/4-graph/ data-title=数据结构和算法学习笔记（四）图 data-web><i class="fa-brands fa-whatsapp fa-fw" aria-hidden=true></i></a>
 <a href=javascript:void(0); title="分享到 Line" data-sharer=line data-url=https://boh5.com/posts/notes/datastructure_algorithm/zuochengyun/4-graph/ data-title=数据结构和算法学习笔记（四）图><i data-svg-src=/lib/simple-icons/icons/line.min.svg aria-hidden=true></i></a>
