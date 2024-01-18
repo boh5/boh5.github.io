@@ -238,6 +238,6 @@ func process(depth, n int, up bool, writer io.Writer) {
 
 ---
 
-> 作者: [黄波](https://boh5.com)  
-> URL: https://boh5.com/posts/notes/datastructure_algorithm/zuochengyun/3-binary-tree/  
+> 作者: [黄波](https://boh5.github.io)  
+> URL: https://boh5.github.io/posts/notes/datastructure_algorithm/zuochengyun/3-binary-tree/  
 

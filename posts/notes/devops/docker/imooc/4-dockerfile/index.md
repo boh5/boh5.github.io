@@ -132,6 +132,6 @@ USER test
 
 ---
 
-> 作者: [黄波](https://boh5.com)  
-> URL: https://boh5.com/posts/notes/devops/docker/imooc/4-dockerfile/  
+> 作者: [黄波](https://boh5.github.io)  
+> URL: https://boh5.github.io/posts/notes/devops/docker/imooc/4-dockerfile/  
 

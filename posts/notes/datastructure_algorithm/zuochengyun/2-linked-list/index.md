@@ -54,6 +54,6 @@
 
 ---
 
-> 作者: [黄波](https://boh5.com)  
-> URL: https://boh5.com/posts/notes/datastructure_algorithm/zuochengyun/2-linked-list/  
+> 作者: [黄波](https://boh5.github.io)  
+> URL: https://boh5.github.io/posts/notes/datastructure_algorithm/zuochengyun/2-linked-list/  
 

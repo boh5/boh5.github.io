@@ -292,6 +292,6 @@ Redis的hash之所以这样设计，是因为当ziplist变得很⼤的时候，�
 
 ---
 
-> 作者: [黄波](https://boh5.com)  
-> URL: https://boh5.com/posts/notes/databases/redis/itheima_redis_lesson/advanced/3-redis-principle-1-data-structure/  
+> 作者: [黄波](https://boh5.github.io)  
+> URL: https://boh5.github.io/posts/notes/databases/redis/itheima_redis_lesson/advanced/3-redis-principle-1-data-structure/  
 

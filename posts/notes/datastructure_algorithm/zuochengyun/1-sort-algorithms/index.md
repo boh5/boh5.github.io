@@ -603,6 +603,6 @@ def get_digit_num(num: int, digit: int):
 
 ---
 
-> 作者: [黄波](https://boh5.com)  
-> URL: https://boh5.com/posts/notes/datastructure_algorithm/zuochengyun/1-sort-algorithms/  
+> 作者: [黄波](https://boh5.github.io)  
+> URL: https://boh5.github.io/posts/notes/datastructure_algorithm/zuochengyun/1-sort-algorithms/  
 

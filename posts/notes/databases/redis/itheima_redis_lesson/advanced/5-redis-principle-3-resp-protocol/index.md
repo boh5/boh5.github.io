@@ -148,6 +148,6 @@ if __name__ == '__main__':
 
 ---
 
-> 作者: [黄波](https://boh5.com)  
-> URL: https://boh5.com/posts/notes/databases/redis/itheima_redis_lesson/advanced/5-redis-principle-3-resp-protocol/  
+> 作者: [黄波](https://boh5.github.io)  
+> URL: https://boh5.github.io/posts/notes/databases/redis/itheima_redis_lesson/advanced/5-redis-principle-3-resp-protocol/  
 

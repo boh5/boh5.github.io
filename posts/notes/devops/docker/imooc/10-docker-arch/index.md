@@ -12,6 +12,6 @@
 
 ---
 
-> 作者: [黄波](https://boh5.com)  
-> URL: https://boh5.com/posts/notes/devops/docker/imooc/10-docker-arch/  
+> 作者: [黄波](https://boh5.github.io)  
+> URL: https://boh5.github.io/posts/notes/devops/docker/imooc/10-docker-arch/  
 
